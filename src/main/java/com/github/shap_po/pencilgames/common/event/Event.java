@@ -1,25 +1,31 @@
 package com.github.shap_po.pencilgames.common.event;
 
-import java.util.ArrayList;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * An event that can be subscribed to by multiple handlers.
  *
  * @param <T> the type of the event
  */
-public class Event<T> implements Consumer<T> {
-    private final List<Consumer<T>> handlers = new ArrayList<>();
+public class Event<T> {
+    private final List<T> handlers = new CopyOnWriteArrayList<>();
 
-    public void register(Consumer<T> handler) {
+    public List<T> getHandlers() {
+        return handlers;
+    }
+
+    public void register(@NotNull T handler) {
         handlers.add(handler);
     }
 
-    @Override
-    public void accept(T t) {
-        for (Consumer<T> handler : handlers) {
-            handler.accept(t);
-        }
+    public void unregister(@NotNull T handler) {
+        handlers.remove(handler);
+    }
+
+    public void clear() {
+        handlers.clear();
     }
 }
