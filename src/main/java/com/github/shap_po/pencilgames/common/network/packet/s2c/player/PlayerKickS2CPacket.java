@@ -6,10 +6,10 @@ import com.github.shap_po.pencilgames.common.network.packet.PacketType;
 import java.util.UUID;
 
 public record PlayerKickS2CPacket(UUID playerId) implements Packet {
-    public static final PacketType PACKET_TYPE = PacketType.s2c("player_kick");
+    public static final PacketType<PlayerKickS2CPacket> PACKET_TYPE = PacketType.s2c("player_kick");
 
     @Override
-    public PacketType getType() {
+    public PacketType<PlayerKickS2CPacket> getType() {
         return PACKET_TYPE;
     }
 }
