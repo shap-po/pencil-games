@@ -14,10 +14,4 @@ public class Server2ClientConnection extends ConnectionHandler {
         super(socket, NetworkSide.SERVER);
         PencilGamesServer.LOGGER.info("Accepted connection from {}", socket.getInetAddress());
     }
-
-    @Override
-    public void close() {
-        super.close();
-        PencilGamesServer.LOGGER.info("Closing connection to {}", socket.getInetAddress());
-    }
 }

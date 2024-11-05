@@ -41,7 +41,7 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
             broadcastPacket(new PlayerDisconnectS2CPacket(player.getId()));
         }));
         onPlayerPacket.register((player, packet) -> {
-            PencilGamesServer.LOGGER.info("Received packet of type {} from {}", packet.getType(), player.getId());
+            ServerPackets.REGISTRY.receive(packet, new ServerPackets.ServerPacketContext(this, player));
         });
 
         PencilGamesServer.LOGGER.info("Server started on port {}", port);
