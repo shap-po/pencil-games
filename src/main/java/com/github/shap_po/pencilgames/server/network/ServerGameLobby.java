@@ -1,10 +1,12 @@
 package com.github.shap_po.pencilgames.server.network;
 
+import com.github.shap_po.pencilgames.common.event.type.BiConsumerEvent;
+import com.github.shap_po.pencilgames.common.event.type.ConsumerEvent;
 import com.github.shap_po.pencilgames.common.game.GameLobby;
 import com.github.shap_po.pencilgames.common.network.ConnectionHandler;
 import com.github.shap_po.pencilgames.common.network.packet.Packet;
-import com.github.shap_po.pencilgames.common.network.packet.type.PlayerJoinPacket;
-import com.github.shap_po.pencilgames.common.network.packet.type.PlayerLeavePacket;
+import com.github.shap_po.pencilgames.common.network.packet.s2c.player.PlayerConnectS2CPacket;
+import com.github.shap_po.pencilgames.common.network.packet.s2c.player.PlayerDisconnectS2CPacket;
 import com.github.shap_po.pencilgames.server.PencilGamesServer;
 
 import java.io.IOException;
@@ -19,11 +21,29 @@ import java.util.UUID;
  * Listens to incoming connections, manages players and redirects game logic.
  */
 public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
+    public final ConsumerEvent<ServerPlayer> onPlayerConnect = ConsumerEvent.create();
+    public final ConsumerEvent<ServerPlayer> onPlayerDisconnect = ConsumerEvent.create();
+    public final BiConsumerEvent<ServerPlayer, Packet> onPlayerPacket = BiConsumerEvent.create();
+
     private final ServerSocket serverSocket;
     private final Map<UUID, ServerPlayer> players = new HashMap<>();
 
     public ServerGameLobby(int port) throws IOException {
+        super("ServerGameLobby");
         serverSocket = new ServerSocket(port);
+
+        onPlayerConnect.register((player -> {
+            players.put(player.getId(), player);
+            broadcastPacket(new PlayerConnectS2CPacket(player.getId()));
+        }));
+        onPlayerDisconnect.register((player -> {
+            players.remove(player.getId());
+            broadcastPacket(new PlayerDisconnectS2CPacket(player.getId()));
+        }));
+        onPlayerPacket.register((player, packet) -> {
+            PencilGamesServer.LOGGER.info("Received packet of type {} from {}", packet.getType(), player.getId());
+        });
+
         PencilGamesServer.LOGGER.info("Server started on port {}", port);
     }
 
@@ -53,25 +73,17 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
 
         UUID playerId = UUID.randomUUID();
         Server2ClientConnection thread = new Server2ClientConnection(connection);
-        thread.onClose.register((e) -> onPlayerLeave(playerId));
+        ServerPlayer player = new ServerPlayer(playerId, thread);
+
+        thread.onConnect.register(() -> onPlayerConnect.accept(player));
+        thread.onDisconnect.register(() -> onPlayerDisconnect.accept(player));
+        thread.onPacket.register((packet) -> onPlayerPacket.accept(player, packet));
+
         thread.start();
-
-        onPlayerJoin(new ServerPlayer(playerId, thread));
     }
 
 
-    private void onPlayerJoin(ServerPlayer player) {
-        players.put(player.getId(), player);
-        broadcastPacket(new PlayerJoinPacket(player.getId()));
-    }
-
-    private void onPlayerLeave(UUID playerId) {
-        players.remove(playerId);
-        broadcastPacket(new PlayerLeavePacket(playerId));
-    }
-
-
-    private void broadcastPacket(Packet<?> packet) {
+    private void broadcastPacket(Packet packet) {
         for (ServerPlayer player : getPlayers().values()) {
             player.getConnectionHandler().sendPacket(packet);
         }

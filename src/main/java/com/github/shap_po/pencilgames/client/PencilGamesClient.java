@@ -2,7 +2,7 @@ package com.github.shap_po.pencilgames.client;
 
 import com.github.shap_po.pencilgames.client.network.Client2ServerConnection;
 import com.github.shap_po.pencilgames.client.network.ClientGameLobby;
-import com.github.shap_po.pencilgames.common.network.packet.type.MessagePacket;
+import com.github.shap_po.pencilgames.common.network.packet.c2s.PlayerMessageC2SPacket;
 import com.github.shap_po.pencilgames.server.network.ServerGameLobby;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,7 @@ import java.io.IOException;
  * The main entry point for the PencilGames client part.
  */
 public class PencilGamesClient {
-    public static Logger LOGGER = LoggerFactory.getLogger(PencilGamesClient.class);
+    public static Logger LOGGER = LoggerFactory.getLogger(PencilGamesClient.class.getSimpleName());
 
     public static void main(String[] args) {
         try {
@@ -61,6 +61,8 @@ public class PencilGamesClient {
     private static void connect(Client2ServerConnection connectionHandler) {
         ClientGameLobby clientGameLobby = new ClientGameLobby(connectionHandler);
 
+        clientGameLobby.sendPacket(new PlayerMessageC2SPacket("Hello!"));
+
         try (java.util.Scanner scanner = new java.util.Scanner(System.in)) {
             while (scanner.hasNextLine() && connectionHandler.isAlive()) {
                 String line = scanner.nextLine();
@@ -70,7 +72,7 @@ public class PencilGamesClient {
                 if (!clientGameLobby.isAlive()) {
                     break;
                 }
-                clientGameLobby.sendPacket(new MessagePacket(line));
+                clientGameLobby.sendPacket(new PlayerMessageC2SPacket(line));
             }
         }
     }

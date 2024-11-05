@@ -22,7 +22,7 @@ public class ClientGameLobby extends Thread implements GameLobby<Player> {
         return players;
     }
 
-    public <P extends Packet<?>> void sendPacket(P packet) {
+    public <P extends Packet> void sendPacket(P packet) {
         connectionHandler.sendPacket(packet);
     }
 }

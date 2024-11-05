@@ -1,7 +1,8 @@
 package com.github.shap_po.pencilgames.common.network;
 
 
-import com.github.shap_po.pencilgames.common.event.Event;
+import com.github.shap_po.pencilgames.common.event.type.ConsumerEvent;
+import com.github.shap_po.pencilgames.common.event.type.RunnableEvent;
 import com.github.shap_po.pencilgames.common.network.packet.Packet;
 
 import java.io.EOFException;
@@ -13,22 +14,25 @@ import java.net.Socket;
 public class ConnectionHandler extends Thread {
     public static final int DEFAULT_PORT = 7920;
 
+    public final RunnableEvent onConnect = RunnableEvent.create();
+    public final RunnableEvent onDisconnect = RunnableEvent.create();
+    public final ConsumerEvent<Packet> onPacket = ConsumerEvent.create();
+
     protected final Socket socket;
 
     private final ObjectInputStream inputStream;
     private final ObjectOutputStream outputStream;
-    private final boolean isServer;
-    public final Event<Packet<?>> onPacketReceived = new Event<>();
-    public final Event<Object> onClose = new Event<>();
+    private final NetworkSide side;
 
     private boolean running;
 
-    public ConnectionHandler(Socket socket, boolean isServer) {
+    public ConnectionHandler(Socket socket, NetworkSide side) {
+        super("ConnectionHandler-" + side + "-" + socket.getInetAddress());
         this.socket = socket;
-        this.isServer = isServer;
+        this.side = side;
         try {
             // Make sure to initialize input/output streams in the correct order to avoid deadlocks
-            if (isServer) {
+            if (side == NetworkSide.SERVER) {
                 outputStream = new ObjectOutputStream(socket.getOutputStream());
                 outputStream.flush();
                 inputStream = new ObjectInputStream(socket.getInputStream());
@@ -43,11 +47,7 @@ public class ConnectionHandler extends Thread {
         }
     }
 
-    public boolean isServer() {
-        return isServer;
-    }
-
-    public <P extends Packet<?>> void sendPacket(P packet) {
+    public <P extends Packet> void sendPacket(P packet) {
         try {
             outputStream.writeObject(packet);
             outputStream.flush();
@@ -58,10 +58,11 @@ public class ConnectionHandler extends Thread {
 
     @Override
     public void run() {
+        onConnect.run();
         while (running) {
             try {
-                Packet<?> packet = (Packet<?>) inputStream.readObject();
-                onPacketReceived.accept(packet);
+                Packet packet = (Packet) inputStream.readObject();
+                onPacket.accept(packet);
             } catch (ClassNotFoundException e) {
                 System.err.println("Received malformed packet from " + socket.getInetAddress());
             } catch (EOFException e) {
@@ -82,7 +83,7 @@ public class ConnectionHandler extends Thread {
             e.printStackTrace();
         } finally {
             running = false;
-            onClose.accept(null);
+            onDisconnect.run();
             this.interrupt();
         }
     }

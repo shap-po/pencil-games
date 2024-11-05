@@ -14,6 +14,10 @@ public class TicTacToeGameType extends FieldGameType<TicTacToeGameType.Cell> {
         super(lobby, field);
     }
 
+    public static void register() {
+
+    }
+
     @Override
     public void start() {
 
