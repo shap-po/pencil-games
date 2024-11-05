@@ -1,8 +1,8 @@
 package com.github.shap_po.pencilgames.server;
 
+import com.github.shap_po.pencilgames.common.util.LoggerUtils;
 import com.github.shap_po.pencilgames.server.network.ServerGameLobby;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -11,7 +11,7 @@ import java.io.IOException;
  * All server-related logic use LOGGER from this class.
  */
 public class PencilGamesServer {
-    public static Logger LOGGER = LoggerFactory.getLogger(PencilGamesServer.class.getSimpleName());
+    public static Logger LOGGER = LoggerUtils.getLogger();
 
     public static void main(String[] args) throws IOException {
         ServerGameLobby serverGameLobby = new ServerGameLobby();

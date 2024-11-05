@@ -3,9 +3,9 @@ package com.github.shap_po.pencilgames.client;
 import com.github.shap_po.pencilgames.client.network.Client2ServerConnection;
 import com.github.shap_po.pencilgames.client.network.ClientGameLobby;
 import com.github.shap_po.pencilgames.common.network.packet.c2s.PlayerMessageC2SPacket;
+import com.github.shap_po.pencilgames.common.util.LoggerUtils;
 import com.github.shap_po.pencilgames.server.network.ServerGameLobby;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -13,7 +13,7 @@ import java.io.IOException;
  * The main entry point for the PencilGames client part.
  */
 public class PencilGamesClient {
-    public static Logger LOGGER = LoggerFactory.getLogger(PencilGamesClient.class.getSimpleName());
+    public static Logger LOGGER = LoggerUtils.getLogger();
 
     public static void main(String[] args) {
         try {

@@ -4,8 +4,10 @@ package com.github.shap_po.pencilgames.common.network;
 import com.github.shap_po.pencilgames.common.event.type.ConsumerEvent;
 import com.github.shap_po.pencilgames.common.event.type.RunnableEvent;
 import com.github.shap_po.pencilgames.common.network.packet.Packet;
+import com.github.shap_po.pencilgames.common.util.LoggerUtils;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -20,6 +22,7 @@ public class ConnectionHandler extends Thread {
 
     protected final Socket socket;
 
+    private final Logger LOGGER = LoggerUtils.getParentLogger(); // not static as different subclasses might have different loggers
     private final ObjectInputStream inputStream;
     private final ObjectOutputStream outputStream;
     private final NetworkSide side;
@@ -52,35 +55,56 @@ public class ConnectionHandler extends Thread {
             outputStream.writeObject(packet);
             outputStream.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Failed to send packet", e);
         }
     }
 
     @Override
     public void run() {
         onConnect.run();
+
         while (running) {
-            try {
-                Packet packet = (Packet) inputStream.readObject();
-                onPacket.accept(packet);
-            } catch (ClassNotFoundException e) {
-                System.err.println("Received malformed packet from " + socket.getInetAddress());
-            } catch (EOFException e) {
-                // Connection closed
-                running = false;
-            } catch (IOException e) {
-                e.printStackTrace();
-                running = false;
-            }
+            Packet packet = receivePacket();
+            if (packet == null) break;
+
+            onPacket.accept(packet);
         }
+
         close();
+    }
+
+    private @Nullable Packet receivePacket() {
+        Object message;
+
+        try {
+            message = inputStream.readObject();
+        } catch (IOException e) {
+            // Connection closed
+            running = false;
+            return null;
+        } catch (ClassNotFoundException e) {
+            LOGGER.error("Received malformed packet from {}", socket.getInetAddress());
+            return null;
+        }
+
+        if (!(message instanceof Packet packet)) {
+            LOGGER.error("Received packet of unknown type {} from {}", message.getClass(), socket.getInetAddress());
+            return null;
+        }
+
+        if (packet.getType().side() != side) {
+            LOGGER.error("Received packet of wrong side {} from {}", packet.getType().side(), socket.getInetAddress());
+            return null;
+        }
+
+        return packet;
     }
 
     public void close() {
         try {
             socket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Failed to close socket", e);
         } finally {
             running = false;
             onDisconnect.run();

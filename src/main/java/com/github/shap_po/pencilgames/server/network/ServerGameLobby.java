@@ -93,7 +93,7 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
         try {
             serverSocket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            PencilGamesServer.LOGGER.error("Failed to close server socket", e);
         } finally {
             this.interrupt();
         }
