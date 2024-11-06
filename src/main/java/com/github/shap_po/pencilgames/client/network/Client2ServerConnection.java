@@ -1,6 +1,5 @@
 package com.github.shap_po.pencilgames.client.network;
 
-import com.github.shap_po.pencilgames.client.PencilGamesClient;
 import com.github.shap_po.pencilgames.common.network.ConnectionHandler;
 import com.github.shap_po.pencilgames.common.network.NetworkSide;
 import com.github.shap_po.pencilgames.common.util.LoggerUtils;
@@ -15,7 +14,7 @@ public class Client2ServerConnection extends ConnectionHandler {
     public Client2ServerConnection(String host, int port) throws IOException {
         super(new Socket(host, port), NetworkSide.CLIENT);
         this.onPacket.register((packet) -> ClientPackets.REGISTRY.receive(packet, new ClientPackets.ClientPacketContext()));
-        PencilGamesClient.LOGGER.info("Connected to server at {}:{}", host, port);
+        LOGGER.info("Connected to server at {}:{}", host, port);
     }
 
     public Client2ServerConnection(String host) throws IOException {

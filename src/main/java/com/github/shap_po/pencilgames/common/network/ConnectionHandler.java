@@ -13,6 +13,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+/**
+ * Base class for both client and server connection handlers.
+ */
 public class ConnectionHandler extends Thread {
     public static final int DEFAULT_PORT = 7920;
 

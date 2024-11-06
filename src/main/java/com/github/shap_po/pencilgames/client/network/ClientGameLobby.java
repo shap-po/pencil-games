@@ -15,6 +15,10 @@ public class ClientGameLobby extends Thread implements GameLobby<Player> {
     public ClientGameLobby(Client2ServerConnection connectionHandler) {
         this.connectionHandler = connectionHandler;
         connectionHandler.start();
+
+        connectionHandler.onPacket.register((packet) -> {
+
+        });
     }
 
     @Override

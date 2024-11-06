@@ -33,8 +33,10 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
         serverSocket = new ServerSocket(port);
 
         onPlayerConnect.register((player -> {
-            players.put(player.getId(), player);
-            broadcastPacket(new PlayerConnectS2CPacket(player.getId()));
+            boolean result = addPlayer(player.getId(), player);
+            if (result) {
+                broadcastPacket(new PlayerConnectS2CPacket(player.getId()));
+            }
         }));
         onPlayerDisconnect.register((player -> {
             players.remove(player.getId());
