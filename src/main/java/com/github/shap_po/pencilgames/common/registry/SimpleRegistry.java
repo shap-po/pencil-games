@@ -8,6 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Simple implementation of {@link Registry}
+ *
+ * @param <K> key type
+ * @param <V> value type
+ */
 public class SimpleRegistry<K, V> implements Registry<K, V> {
     protected final Map<K, V> registry = new HashMap<>();
 
@@ -15,6 +21,11 @@ public class SimpleRegistry<K, V> implements Registry<K, V> {
     @Nullable
     public V get(@Nullable K id) {
         return registry.get(id);
+    }
+
+    @Override
+    public void remove(@NonNull K id) {
+        registry.remove(id);
     }
 
     @Override

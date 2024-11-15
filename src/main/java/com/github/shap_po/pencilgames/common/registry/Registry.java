@@ -8,6 +8,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Base Registry interface.
+ * Registries are used to store objects with unique ids
+ *
+ * @param <K> key type
+ * @param <V> value type
+ * @see SimpleRegistry
+ */
 public interface Registry<K, V> {
     @Nullable V get(@Nullable K id);
 
@@ -16,6 +24,8 @@ public interface Registry<K, V> {
     }
 
     void add(@NonNull K id, @NonNull V value);
+
+    void remove(@NonNull K id);
 
     default boolean contains(K id) {
         return this.get(id) != null;
