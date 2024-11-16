@@ -13,14 +13,14 @@ repositories {
 }
 
 dependencies {
-    testImplementation platform("org.junit:junit-bom:5.10.0")
+    testImplementation platform("org.junit:junit-bom:${project.junit_version}")
     testImplementation "org.junit.jupiter:junit-jupiter"
 
     // logger
-    implementation 'org.slf4j:slf4j-api:1.7.25'
-    implementation 'org.slf4j:slf4j-simple:1.7.25'
-    implementation "org.jetbrains:annotations:24.0.1"
-    implementation "com.google.guava:guava:33.3.1-jre"
+    implementation "org.slf4j:slf4j-api:${project.slf4j_version}"
+    implementation "org.apache.logging.log4j:log4j-slf4j2-impl:${project.log4j_version}"
+    implementation "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
+    implementation "com.google.guava:guava:${project.guava_version}"
 }
 
 test {
