@@ -6,6 +6,7 @@ import com.github.shap_po.pencilgames.common.util.LoggerUtils;
 import com.github.shap_po.pencilgames.server.PencilGamesServer;
 import org.slf4j.Logger;
 
+import java.io.IOException;
 import java.net.Socket;
 
 /**
@@ -14,7 +15,7 @@ import java.net.Socket;
 public class Server2ClientConnection extends ConnectionHandler {
     public static Logger LOGGER = LoggerUtils.getLogger();
 
-    public Server2ClientConnection(Socket socket) {
+    public Server2ClientConnection(Socket socket) throws IOException {
         super(socket, NetworkSide.SERVER);
         PencilGamesServer.LOGGER.info("Accepted connection from {}", socket.getInetAddress());
     }

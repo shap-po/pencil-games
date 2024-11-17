@@ -37,7 +37,7 @@ public class PacketReceiverRegistry<C> extends SimpleRegistry<PacketType<? exten
      */
     public void registerPacketType(@NonNull PacketType<?> packetType) {
         if (this.contains(packetType)) {
-            throw new IllegalArgumentException("Id " + packetType + " already exists");
+            throw new IllegalArgumentException("Packet type " + packetType + " is already registered");
         }
         assertSide(packetType);
 
@@ -107,13 +107,15 @@ public class PacketReceiverRegistry<C> extends SimpleRegistry<PacketType<? exten
      * @param packet  the packet
      * @param context the context
      * @param <P>     the packet
+     * @throws IllegalArgumentException if the packet type is unknown
      */
-    public <P extends Packet> void receive(P packet, C context) {
+    public <P extends Packet> void receive(P packet, C context) throws IllegalArgumentException {
         PacketType<P> packetType = getType(packet);
+        assertSide(packetType);
+
         if (!this.contains(packetType)) {
             throw new IllegalArgumentException("Received packet of unknown type " + packetType);
         }
-        assertSide(packetType);
 
         // receive the packet of a specific type
         this.getEvent(packetType).accept(packet, context);
@@ -123,7 +125,11 @@ public class PacketReceiverRegistry<C> extends SimpleRegistry<PacketType<? exten
 
         // pass to sub registries
         for (PacketReceiverRegistry<C> subRegistry : this.subRegistries) {
-            subRegistry.receive(packet, context);
+            try {
+                subRegistry.receive(packet, context);
+            } catch (IllegalArgumentException ignored) {
+                // sub registries are not required to handle all packet types
+            }
         }
     }
 

@@ -32,25 +32,22 @@ public class ConnectionHandler extends Thread {
 
     private boolean running;
 
-    public ConnectionHandler(Socket socket, NetworkSide side) {
+    public ConnectionHandler(Socket socket, NetworkSide side) throws IOException {
         super("ConnectionHandler-" + side + "-" + socket.getInetAddress());
         this.socket = socket;
         this.side = side;
-        try {
-            // Make sure to initialize input/output streams in the correct order to avoid deadlocks
-            if (side == NetworkSide.SERVER) {
-                outputStream = new ObjectOutputStream(socket.getOutputStream());
-                outputStream.flush();
-                inputStream = new ObjectInputStream(socket.getInputStream());
-            } else {
-                inputStream = new ObjectInputStream(socket.getInputStream());
-                outputStream = new ObjectOutputStream(socket.getOutputStream());
-                outputStream.flush();
-            }
-            running = true;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+
+        // Make sure to initialize input/output streams in the correct order to avoid deadlocks
+        if (side == NetworkSide.SERVER) {
+            outputStream = new ObjectOutputStream(socket.getOutputStream());
+            outputStream.flush();
+            inputStream = new ObjectInputStream(socket.getInputStream());
+        } else {
+            inputStream = new ObjectInputStream(socket.getInputStream());
+            outputStream = new ObjectOutputStream(socket.getOutputStream());
+            outputStream.flush();
         }
+        running = true;
     }
 
     public <P extends Packet> void sendPacket(P packet) {
@@ -58,7 +55,7 @@ public class ConnectionHandler extends Thread {
             outputStream.writeObject(packet);
             outputStream.flush();
         } catch (IOException e) {
-            LOGGER.error("Failed to send packet", e);
+            LOGGER.error("Failed to send packet {}", e.getMessage());
         }
     }
 

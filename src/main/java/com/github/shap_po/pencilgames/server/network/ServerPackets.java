@@ -13,7 +13,7 @@ public class ServerPackets {
 
         // TODO: implement actual packet handlers
         REGISTRY.registerReceiver(PlayerMessageC2SPacket.PACKET_TYPE, (packet, context) -> {
-            PencilGamesServer.LOGGER.info("Received message from {}: {}", context.player.getId(), packet.message());
+            PencilGamesServer.LOGGER.info("Received message from {}: {}", context.player.id(), packet.message());
         });
     }
 

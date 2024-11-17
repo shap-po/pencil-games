@@ -7,14 +7,13 @@ import com.github.shap_po.pencilgames.common.network.ConnectionHandler;
 import com.github.shap_po.pencilgames.common.network.packet.Packet;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.player.PlayerConnectS2CPacket;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.player.PlayerDisconnectS2CPacket;
+import com.github.shap_po.pencilgames.common.network.packet.s2c.player.SyncPlayerListS2CPacket;
 import com.github.shap_po.pencilgames.server.PencilGamesServer;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Represents a game lobby on the server side.
@@ -33,17 +32,29 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
         serverSocket = new ServerSocket(port);
 
         onPlayerConnect.register((player -> {
-            boolean result = addPlayer(player.getId(), player);
+            // add player and check if successful
+            boolean result = addPlayer(player.id(), player);
+
             if (result) {
-                broadcastPacket(new PlayerConnectS2CPacket(player.getId()));
+                // send the player list to the new player
+                Collection<UUID> playerIds = new LinkedList<>(players.keySet());
+                player.connectionHandler()
+                    .sendPacket(new SyncPlayerListS2CPacket(playerIds));
+
+                // notify other players of the new player
+                broadcastPacket(new PlayerConnectS2CPacket(player.id()));
             }
         }));
         onPlayerDisconnect.register((player -> {
-            players.remove(player.getId());
-            broadcastPacket(new PlayerDisconnectS2CPacket(player.getId()));
+            players.remove(player.id());
+            broadcastPacket(new PlayerDisconnectS2CPacket(player.id()));
         }));
         onPlayerPacket.register((player, packet) -> {
-            ServerPackets.REGISTRY.receive(packet, new ServerPackets.ServerPacketContext(this, player));
+            try {
+                ServerPackets.REGISTRY.receive(packet, new ServerPackets.ServerPacketContext(this, player));
+            } catch (IllegalArgumentException e) {
+                PencilGamesServer.LOGGER.error("Failed to receive packet", e);
+            }
         });
 
         PencilGamesServer.LOGGER.info("Server started on port {}", port);
@@ -87,7 +98,7 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
 
     private void broadcastPacket(Packet packet) {
         for (ServerPlayer player : getPlayers().values()) {
-            player.getConnectionHandler().sendPacket(packet);
+            player.connectionHandler().sendPacket(packet);
         }
     }
 

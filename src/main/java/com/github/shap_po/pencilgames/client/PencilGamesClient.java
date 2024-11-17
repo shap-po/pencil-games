@@ -1,6 +1,5 @@
 package com.github.shap_po.pencilgames.client;
 
-import com.github.shap_po.pencilgames.client.network.Client2ServerConnection;
 import com.github.shap_po.pencilgames.client.network.ClientGameLobby;
 import com.github.shap_po.pencilgames.common.network.packet.c2s.PlayerMessageC2SPacket;
 import com.github.shap_po.pencilgames.common.util.LoggerUtils;
@@ -8,71 +7,69 @@ import com.github.shap_po.pencilgames.server.network.ServerGameLobby;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 /**
  * The main entry point for the PencilGames client part.
  */
 public class PencilGamesClient {
     public static Logger LOGGER = LoggerUtils.getLogger();
+    public static final ClientGameLobby clientLobby = new ClientGameLobby();
+    private static final Scanner scanner = new Scanner(System.in); //TODO: remove
 
     public static void main(String[] args) {
+        boolean host = args.length != 0;
+
+        run(host);
+    }
+
+    private static void run(boolean host) {
         try {
-            boolean host = true;
-
-            Client2ServerConnection connectionHandler;
             if (host) {
-                connectionHandler = host();
-            } else {
-                connectionHandler = connect("localhost");
+                try {
+                    ServerGameLobby serverLobby = new ServerGameLobby();
+                    serverLobby.start();
+                } catch (IOException e) {
+                    LOGGER.error("Failed to start server", e);
+                }
             }
 
-            if (connectionHandler == null) {
-                return;
-            }
-
-            connect(connectionHandler);
+            clientLobby.connect("localhost");
+            consoleLoop();
         } catch (Exception e) {
             LOGGER.error("An error occurred", e);
         }
-    }
 
-    private static Client2ServerConnection connect(String host) {
-        try {
-            return new Client2ServerConnection(host);
-        } catch (IOException e) {
-            LOGGER.error("Failed to connect to server", e);
-            return null;
+
+        for (int i = 0; i < 3; i++) { // for debugging
+            try {
+                clientLobby.connect("localhost");
+                consoleLoop();
+            } catch (IOException e) {
+                LOGGER.error("Failed to connect to server", e);
+            }
         }
     }
 
-    private static Client2ServerConnection host() {
-        ServerGameLobby serverGameLobby;
-        try {
-            serverGameLobby = new ServerGameLobby();
-        } catch (IOException e) {
-            LOGGER.error("Failed to start server", e);
-            return null;
-        }
-        serverGameLobby.start();
+    /**
+     * Console loop for testing purposes.
+     * Will be removed and replaced with a UI down the line
+     */
+    private static void consoleLoop() {
+        while (scanner.hasNextLine() && clientLobby.isConnected()) {
+            String line = scanner.nextLine();
 
-        return connect("localhost");
-    }
+            if (line.isEmpty()) {
+                continue;
+            }
+            if (!clientLobby.isConnected()) {
+                break;
+            }
+            clientLobby.sendPacket(new PlayerMessageC2SPacket(line));
 
-    private static void connect(Client2ServerConnection connectionHandler) {
-        ClientGameLobby clientGameLobby = new ClientGameLobby(connectionHandler);
-
-        clientGameLobby.sendPacket(new PlayerMessageC2SPacket("Hello!"));
-
-        try (java.util.Scanner scanner = new java.util.Scanner(System.in)) {
-            while (scanner.hasNextLine() && connectionHandler.isAlive()) {
-                String line = scanner.nextLine();
-                if (line.isEmpty()) {
-                    continue;
-                }
-                if (!clientGameLobby.isAlive()) {
-                    break;
-                }
-                clientGameLobby.sendPacket(new PlayerMessageC2SPacket(line));
+            if (line.equals("stop")) {
+                clientLobby.disconnect();
+                break;
             }
         }
     }
