@@ -25,7 +25,11 @@ public class MenuPanel extends JPanel {
         add(button);
     }
 
+    protected void addBackButton(boolean confirm) {
+        addButton("Back", e -> root.back(confirm));
+    }
+
     protected void addBackButton() {
-        addButton("Back", e -> root.back());
+        addBackButton(false);
     }
 }

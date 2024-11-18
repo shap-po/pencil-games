@@ -27,7 +27,7 @@ public class GameWindow extends JFrame {
         menus.put(State.MAIN_MENU, new MainMenu(this));
         menus.put(State.JOIN_MENU, new JoinMenu(this));
         menus.put(State.HOST_MENU, new HostMenu(this));
-        menus.put(State.SETTINGS_MENU,new SettingsMenu(this));
+        menus.put(State.SETTINGS_MENU, new SettingsMenu(this));
 
         updateMenuState();
     }
@@ -60,12 +60,32 @@ public class GameWindow extends JFrame {
         setContent(menus.get(getMenuState()));
     }
 
-    public void back() {
+    public void back(boolean confirm, String confirmText) {
         if (stateHistory.isEmpty()) {
             return;
         }
+
+        if (confirm) {
+            int confirmed = JOptionPane.showConfirmDialog(this, confirmText, "Confirm", JOptionPane.YES_NO_OPTION);
+            if (confirmed != JOptionPane.YES_OPTION) {
+                return;
+            }
+        }
+
         stateHistory.removeLast();
         updateMenuState();
+    }
+
+    public void back(String confirmText) {
+        back(true, confirmText);
+    }
+
+    public void back(boolean confirm) {
+        back(confirm, "Are you sure you want to go back?");
+    }
+
+    public void back() {
+        back(false, null);
     }
 
     public enum State {
