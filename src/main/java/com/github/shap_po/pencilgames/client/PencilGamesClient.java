@@ -1,6 +1,7 @@
 package com.github.shap_po.pencilgames.client;
 
 import com.github.shap_po.pencilgames.client.network.ClientGameLobby;
+import com.github.shap_po.pencilgames.client.ui.GameWindow;
 import com.github.shap_po.pencilgames.common.network.packet.c2s.PlayerMessageC2SPacket;
 import com.github.shap_po.pencilgames.common.util.LoggerUtils;
 import com.github.shap_po.pencilgames.server.network.ServerGameLobby;
@@ -14,13 +15,16 @@ import java.util.Scanner;
  */
 public class PencilGamesClient {
     public static Logger LOGGER = LoggerUtils.getLogger();
+    public static final GameWindow gameWindow = new GameWindow();
     public static final ClientGameLobby clientLobby = new ClientGameLobby();
     private static final Scanner scanner = new Scanner(System.in); //TODO: remove
 
     public static void main(String[] args) {
-        boolean host = args.length != 0;
+        boolean isHost = args.length != 0;
 
-        run(host);
+        clientLobby.start();
+        gameWindow.setVisible(true);
+        run(isHost);
     }
 
     private static void run(boolean host) {

@@ -20,7 +20,7 @@ import java.util.UUID;
  * The connection handler of a lobby can be updated to a new one by calling
  * {@link #connect(String, int)}, {@link #connect(String)}, or {@link #disconnect()}
  */
-public class ClientGameLobby implements GameLobby<ClientPlayer> {
+public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
     public static final Logger LOGGER = LoggerUtils.getLogger();
     private final Map<UUID, ClientPlayer> players = new HashMap<>();
     private Client2ServerConnection connectionHandler;
