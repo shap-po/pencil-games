@@ -96,8 +96,17 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
     }
 
 
-    private void broadcastPacket(Packet packet) {
+    public void broadcastPacket(Packet packet) {
         for (ServerPlayer player : getPlayers().values()) {
+            player.connectionHandler().sendPacket(packet);
+        }
+    }
+
+    public void broadcastPacket(Packet packet, UUID except) {
+        for (ServerPlayer player : getPlayers().values()) {
+            if (player.id().equals(except)) {
+                continue;
+            }
             player.connectionHandler().sendPacket(packet);
         }
     }

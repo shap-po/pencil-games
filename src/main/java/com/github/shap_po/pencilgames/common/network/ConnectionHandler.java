@@ -33,7 +33,7 @@ public class ConnectionHandler extends Thread {
     private boolean running;
 
     public ConnectionHandler(Socket socket, NetworkSide side) throws IOException {
-        super("ConnectionHandler-" + side + "-" + socket.getInetAddress());
+        super("ConnectionHandler/" + side + "/" + socket.getInetAddress());
         this.socket = socket;
         this.side = side;
 

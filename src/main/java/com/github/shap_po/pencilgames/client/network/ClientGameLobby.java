@@ -5,6 +5,7 @@ import com.github.shap_po.pencilgames.common.network.ConnectionHandler;
 import com.github.shap_po.pencilgames.common.network.packet.Packet;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.player.PlayerConnectS2CPacket;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.player.PlayerDisconnectS2CPacket;
+import com.github.shap_po.pencilgames.common.network.packet.s2c.player.PlayerMessageS2CPacket;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.player.SyncPlayerListS2CPacket;
 import com.github.shap_po.pencilgames.common.util.LoggerUtils;
 import org.slf4j.Logger;
@@ -29,13 +30,6 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
      * Creates a new game lobby and registers receivers for base packets
      */
     public ClientGameLobby() {
-        ClientPackets.REGISTRY.registerReceiver(SyncPlayerListS2CPacket.PACKET_TYPE, (packet, context) -> {
-            LOGGER.info("Syncing player list: {}", packet.playerIds());
-            players.clear();
-            for (UUID playerId : packet.playerIds()) {
-                addPlayer(playerId, new ClientPlayer(playerId));
-            }
-        });
         ClientPackets.REGISTRY.registerReceiver(PlayerConnectS2CPacket.PACKET_TYPE, (packet, context) -> {
             LOGGER.info("Player {} connected", packet.playerId());
             addPlayer(packet.playerId(), new ClientPlayer(packet.playerId()));
@@ -43,6 +37,19 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
         ClientPackets.REGISTRY.registerReceiver(PlayerDisconnectS2CPacket.PACKET_TYPE, (packet, context) -> {
             LOGGER.info("Player {} disconnected", packet.playerId());
             removePlayer(packet.playerId());
+        });
+        ClientPackets.REGISTRY.registerReceiver(PlayerMessageS2CPacket.PACKET_TYPE, (packet, context) -> {
+            ClientPlayer player = players.getOrDefault(packet.playerId(), null);
+            if (player != null) {
+                LOGGER.info("Received message from {}: {}", player, packet.message());
+            }
+        });
+        ClientPackets.REGISTRY.registerReceiver(SyncPlayerListS2CPacket.PACKET_TYPE, (packet, context) -> {
+            LOGGER.info("Syncing player list: {}", packet.playerIds());
+            players.clear();
+            for (UUID playerId : packet.playerIds()) {
+                addPlayer(playerId, new ClientPlayer(playerId));
+            }
         });
     }
 
