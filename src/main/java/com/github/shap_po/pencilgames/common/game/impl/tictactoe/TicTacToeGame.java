@@ -9,6 +9,7 @@ import com.github.shap_po.pencilgames.common.util.Pair;
 
 public class TicTacToeGame extends FieldGame<TicTacToeGame.Cell> {
     public static final Identifier GAME_ID = Identifier.of("tictactoe");
+    private static final Pair<Integer, Integer> size = Pair.of(3, 3);
 
     public TicTacToeGame(GameLobby<?> lobby, GameField<Cell> gameField) {
         super(lobby, gameField);
@@ -40,9 +41,7 @@ public class TicTacToeGame extends FieldGame<TicTacToeGame.Cell> {
     public static GameFactory<TicTacToeGame> getFactory() {
         return new GameFactory<>(
             GAME_ID,
-            FieldGame.SETTINGS,
-            (lobby, options) -> {
-                Pair<Integer, Integer> size = options.get("size");
+            (lobby) -> {
                 GameField<Cell> gameField = new GameField<>(new Cell[size.left()][size.right()]);
                 return new TicTacToeGame(lobby, gameField);
             },
