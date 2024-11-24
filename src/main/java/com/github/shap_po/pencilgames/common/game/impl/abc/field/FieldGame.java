@@ -1,6 +1,5 @@
 package com.github.shap_po.pencilgames.common.game.impl.abc.field;
 
-import com.github.shap_po.pencilgames.common.Player;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.data.GameField;
 
 import java.util.UUID;

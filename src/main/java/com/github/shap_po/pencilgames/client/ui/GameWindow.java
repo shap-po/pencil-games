@@ -1,10 +1,11 @@
 package com.github.shap_po.pencilgames.client.ui;
 
 import com.github.shap_po.pencilgames.client.PencilGamesClient;
-import com.github.shap_po.pencilgames.client.ui.menu.HostMenu;
-import com.github.shap_po.pencilgames.client.ui.menu.JoinMenu;
-import com.github.shap_po.pencilgames.client.ui.menu.MainMenu;
-import com.github.shap_po.pencilgames.client.ui.menu.SettingsMenu;
+import com.github.shap_po.pencilgames.client.ui.screen.game.GameScreen;
+import com.github.shap_po.pencilgames.client.ui.screen.menu.HostMenu;
+import com.github.shap_po.pencilgames.client.ui.screen.menu.JoinMenu;
+import com.github.shap_po.pencilgames.client.ui.screen.menu.MainMenu;
+import com.github.shap_po.pencilgames.client.ui.screen.menu.SettingsMenu;
 import com.github.shap_po.pencilgames.client.ui.util.MenuPanel;
 
 import javax.swing.*;
@@ -46,14 +47,22 @@ public class GameWindow extends JFrame {
         setVisible(true);
     }
 
+    public void setMenuState(State state, MenuPanel menuPanel) {
+        this.stateHistory.add(state);
+        setContent(menuPanel);
+    }
+
     public void setMenuState(State state) {
         if (!menus.containsKey(state)) {
             PencilGamesClient.LOGGER.warn("Unknown menu state: {}", state);
             return;
         }
 
-        this.stateHistory.add(state);
-        setContent(menus.get(state));
+        setMenuState(state, menus.get(state));
+    }
+
+    public void setGameScreen(GameScreen<?> gameScreen) {
+        setMenuState(State.GAME_SCREEN, gameScreen);
     }
 
     private void updateMenuState() {
@@ -88,10 +97,12 @@ public class GameWindow extends JFrame {
         back(false, null);
     }
 
+
     public enum State {
         MAIN_MENU,
         JOIN_MENU,
         HOST_MENU,
-        SETTINGS_MENU;
+        SETTINGS_MENU,
+        GAME_SCREEN;
     }
 }

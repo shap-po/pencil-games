@@ -2,7 +2,7 @@ package com.github.shap_po.pencilgames.client.game.impl;
 
 import com.github.shap_po.pencilgames.client.game.abc.field.ClientFieldGame;
 import com.github.shap_po.pencilgames.client.network.ClientGameLobby;
-import com.github.shap_po.pencilgames.common.game.data.GameFactory;
+import com.github.shap_po.pencilgames.common.game.GameFactory;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.data.GameField;
 import com.github.shap_po.pencilgames.common.game.impl.tictactoe.TicTacToeGame;
 
@@ -30,6 +30,11 @@ public class ClientTicTacToeGame extends ClientFieldGame<TicTacToeGame.Cell> imp
     @Override
     public Cell playerToCell(UUID playerId) {
         return playerToCellMap.getOrDefault(playerId, Cell.EMPTY);
+    }
+
+    @Override
+    public boolean validateMove(int x, int y) {
+        return super.validateMove(x, y) && gameField.get(x, y) == Cell.EMPTY;
     }
 
     @Override

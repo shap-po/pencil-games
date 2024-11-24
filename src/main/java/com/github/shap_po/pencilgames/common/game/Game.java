@@ -1,6 +1,4 @@
-package com.github.shap_po.pencilgames.common.game.data;
-
-import com.github.shap_po.pencilgames.common.game.GameLobby;
+package com.github.shap_po.pencilgames.common.game;
 
 /**
  * A base class for all game types.
@@ -11,6 +9,10 @@ public abstract class Game<L extends GameLobby<?>> {
 
     public Game(L lobby) {
         this.lobby = lobby;
+    }
+
+    public L getLobby() {
+        return this.lobby;
     }
 
     /**

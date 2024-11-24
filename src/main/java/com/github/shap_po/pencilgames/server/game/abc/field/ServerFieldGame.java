@@ -1,6 +1,6 @@
 package com.github.shap_po.pencilgames.server.game.abc.field;
 
-import com.github.shap_po.pencilgames.common.game.data.Game;
+import com.github.shap_po.pencilgames.common.game.Game;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.FieldGame;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.data.GameField;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.packet.c2s.PlayerMoveC2SPacket;
@@ -38,7 +38,7 @@ public abstract class ServerFieldGame<C> extends Game<ServerGameLobby> implement
             return;
         }
 
-        player.connectionHandler().sendPacket(new InvalidMoveS2CPacket());
+        player.connectionHandler().sendPacket(new InvalidMoveS2CPacket(x, y, gameField.get(x, y)));
     }
 
     /**

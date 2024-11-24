@@ -1,6 +1,6 @@
 package com.github.shap_po.pencilgames.server.game.impl;
 
-import com.github.shap_po.pencilgames.common.game.data.GameFactory;
+import com.github.shap_po.pencilgames.common.game.GameFactory;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.data.GameField;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.packet.s2c.PlayerMoveS2CPacket;
 import com.github.shap_po.pencilgames.common.game.impl.tictactoe.TicTacToeGame;
@@ -36,6 +36,7 @@ public class ServerTicTacToeGame extends ServerFieldGame<TicTacToeGame.Cell> imp
 
     @Override
     public boolean validateMove(ServerPlayer player, int x, int y) {
+        // TODO: check if player's turn
         return super.validateMove(player, x, y) && gameField.get(x, y) == TicTacToeGame.Cell.EMPTY;
     }
 

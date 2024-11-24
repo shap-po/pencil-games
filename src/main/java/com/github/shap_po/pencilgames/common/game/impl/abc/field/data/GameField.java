@@ -2,22 +2,32 @@ package com.github.shap_po.pencilgames.common.game.impl.abc.field.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 public record GameField<C>(List<List<C>> cells) {
-    public static <C> GameField<C> of(C defaultValue, int width, int height) {
+    public static <C> GameField<C> of(BiFunction<Integer, Integer, C> valueFactory, int width, int height) {
         List<List<C>> cells = new ArrayList<>(height);
 
         for (int y = 0; y < height; y++) {
             List<C> row = new ArrayList<>(width);
 
             for (int x = 0; x < width; x++) {
-                row.add(defaultValue);
+                row.add(valueFactory.apply(x, y));
             }
 
             cells.add(row);
         }
 
         return new GameField<>(cells);
+    }
+
+    public static <C> GameField<C> of(Supplier<C> valueSupplier, int width, int height) {
+        return of((x, y) -> valueSupplier.get(), width, height);
+    }
+
+    public static <C> GameField<C> of(C value, int width, int height) {
+        return of((x, y) -> value, width, height);
     }
 
     public int getWidth() {

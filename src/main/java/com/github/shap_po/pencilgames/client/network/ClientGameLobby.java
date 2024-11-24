@@ -24,6 +24,7 @@ import java.util.UUID;
 public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
     public static final Logger LOGGER = LoggerUtils.getLogger();
     private final Map<UUID, ClientPlayer> players = new HashMap<>();
+    private ClientPlayer localPlayer;
     private Client2ServerConnection connectionHandler;
 
     /**
@@ -51,6 +52,7 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
                 addPlayer(playerId, new ClientPlayer(playerId));
             }
         });
+        // TODO: Sync local player
     }
 
     /**
@@ -104,6 +106,10 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
     @Override
     public Map<UUID, ClientPlayer> getPlayers() {
         return players;
+    }
+
+    public ClientPlayer getLocalPlayer() {
+        return localPlayer;
     }
 
     public void sendPacket(Packet packet) {

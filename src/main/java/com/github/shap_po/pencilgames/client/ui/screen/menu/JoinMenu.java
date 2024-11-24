@@ -1,4 +1,4 @@
-package com.github.shap_po.pencilgames.client.ui.menu;
+package com.github.shap_po.pencilgames.client.ui.screen.menu;
 
 import com.github.shap_po.pencilgames.client.PencilGamesClient;
 import com.github.shap_po.pencilgames.client.ui.GameWindow;

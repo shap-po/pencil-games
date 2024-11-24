@@ -1,6 +1,5 @@
-package com.github.shap_po.pencilgames.common.game.data;
+package com.github.shap_po.pencilgames.common.game;
 
-import com.github.shap_po.pencilgames.common.game.GameLobby;
 import com.github.shap_po.pencilgames.common.util.Identifier;
 
 import java.util.function.Function;
