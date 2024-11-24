@@ -4,7 +4,7 @@ import com.github.shap_po.pencilgames.client.PencilGamesClient;
 import com.github.shap_po.pencilgames.client.ui.GameWindow;
 import com.github.shap_po.pencilgames.client.ui.util.MenuPanel;
 import com.github.shap_po.pencilgames.client.ui.util.NumberField;
-import com.github.shap_po.pencilgames.common.game.GameFactoryRegistry;
+import com.github.shap_po.pencilgames.server.game.ServerGameFactoryRegistry;
 import com.github.shap_po.pencilgames.common.network.ConnectionHandler;
 import com.github.shap_po.pencilgames.common.util.Identifier;
 
@@ -19,7 +19,7 @@ public class HostMenu extends MenuPanel {
         add(portField);
 
         JComboBox<Identifier> gameTypes = new JComboBox<>();
-        for (Identifier id : GameFactoryRegistry.REGISTRY.getKeys()) {
+        for (Identifier id : ServerGameFactoryRegistry.REGISTRY.getKeys()) {
             gameTypes.addItem(id);
         }
         add(gameTypes);

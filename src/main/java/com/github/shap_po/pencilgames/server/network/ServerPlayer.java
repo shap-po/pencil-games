@@ -7,5 +7,5 @@ import java.util.UUID;
 /**
  * Represents a player on the server side.
  */
-public record ServerPlayer(UUID id, Server2ClientConnection connectionHandler) implements Player {
+public record ServerPlayer(UUID getId, Server2ClientConnection connectionHandler) implements Player {
 }

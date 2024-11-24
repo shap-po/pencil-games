@@ -8,38 +8,25 @@ import java.util.function.Function;
 /**
  * Factory for game types. The factory provides all the necessary information to create a game type.
  */
-public class GameFactory<G extends Game> implements Function<GameLobby<?>, G> {
+public class GameFactory<L extends GameLobby<?>, G extends Game<L>> implements Function<L, G> {
     private final Identifier id;
-    private final Function<GameLobby<?>, G> constructorFunction;
-    private final Runnable registerClientMethod;
-    private final Runnable registerServerMethod;
+    private final Function<L, G> constructorFunction;
 
+    // TODO: check for min/max players requirement
     public GameFactory(
         Identifier id,
-        Function<GameLobby<?>, G> constructorFunction,
-        Runnable registerClientMethod,
-        Runnable registerServerMethod
+        Function<L, G> constructorFunction
     ) {
         this.id = id;
         this.constructorFunction = constructorFunction;
-        this.registerClientMethod = registerClientMethod;
-        this.registerServerMethod = registerServerMethod;
     }
 
     public Identifier getId() {
         return id;
     }
 
-    public void registerClient() {
-        registerClientMethod.run();
-    }
-
-    public void registerServer() {
-        registerServerMethod.run();
-    }
-
     @Override
-    public G apply(GameLobby<?> lobby) {
+    public G apply(L lobby) {
         return constructorFunction.apply(lobby);
     }
 }

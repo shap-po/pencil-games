@@ -4,5 +4,5 @@ import com.github.shap_po.pencilgames.common.Player;
 
 import java.util.UUID;
 
-public record ClientPlayer(UUID id) implements Player {
+public record ClientPlayer(UUID getId) implements Player {
 }

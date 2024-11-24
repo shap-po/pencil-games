@@ -45,6 +45,16 @@ public class PacketReceiverRegistry<C> extends SimpleRegistry<PacketType<? exten
     }
 
     /**
+     * Remove a packet type from registry.
+     * This also removes all packet handlers of the packet type
+     *
+     * @param packetType the packet type
+     */
+    public void unregisterPacketType(@NonNull PacketType<?> packetType) {
+        this.remove(packetType);
+    }
+
+    /**
      * Add a packet handler for a specific packet type
      *
      * @param packetType the packet type
@@ -57,12 +67,23 @@ public class PacketReceiverRegistry<C> extends SimpleRegistry<PacketType<? exten
     }
 
     /**
-     * Remove a packet handler of a specific type
+     * Remove all packet handlers of a specific type
      *
      * @param packetType the packet type
      */
-    public void unregisterReceiver(@NonNull PacketType<?> packetType) {
+    public void unregisterReceivers(@NonNull PacketType<?> packetType) {
         this.remove(packetType);
+    }
+
+    /**
+     * Remove a packet handler of a specific type
+     *
+     * @param packetType the packet type
+     * @param handler    the handler
+     * @param <P>        the packet
+     */
+    public <P extends Packet> void unregisterReceiver(@NonNull PacketType<P> packetType, BiConsumer<P, C> handler) {
+        this.getEvent(packetType).unregister(handler);
     }
 
     /**

@@ -33,7 +33,7 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
 
         onPlayerConnect.register((player -> {
             // add player and check if successful
-            boolean result = addPlayer(player.id(), player);
+            boolean result = addPlayer(player.getId(), player);
 
             if (result) {
                 // send the player list to the new player
@@ -42,12 +42,12 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
                     .sendPacket(new SyncPlayerListS2CPacket(playerIds));
 
                 // notify other players of the new player
-                broadcastPacket(new PlayerConnectS2CPacket(player.id()));
+                broadcastPacket(new PlayerConnectS2CPacket(player.getId()));
             }
         }));
         onPlayerDisconnect.register((player -> {
-            players.remove(player.id());
-            broadcastPacket(new PlayerDisconnectS2CPacket(player.id()));
+            players.remove(player.getId());
+            broadcastPacket(new PlayerDisconnectS2CPacket(player.getId()));
         }));
         onPlayerPacket.register((player, packet) -> {
             try {
@@ -104,7 +104,7 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
 
     public void broadcastPacket(Packet packet, UUID except) {
         for (ServerPlayer player : getPlayers().values()) {
-            if (player.id().equals(except)) {
+            if (player.getId().equals(except)) {
                 continue;
             }
             player.connectionHandler().sendPacket(packet);

@@ -1,6 +1,7 @@
 package com.github.shap_po.pencilgames.common.network.packet;
 
 import com.github.shap_po.pencilgames.common.network.NetworkSide;
+import com.github.shap_po.pencilgames.common.network.PacketReceiverRegistry;
 import com.github.shap_po.pencilgames.common.util.Identifier;
 
 /**
@@ -9,7 +10,7 @@ import com.github.shap_po.pencilgames.common.util.Identifier;
  * @param side network side that accepts the packet
  * @param id   unique identifier
  * @param <P>  the packet. Although it is not used in this class, it helps receiver to know what kind of packet it is
- * @see com.github.shap_po.pencilgames.common.network.PacketReceiverRegistry
+ * @see PacketReceiverRegistry
  */
 public record PacketType<P extends Packet>(NetworkSide side, Identifier id) {
     @Override
