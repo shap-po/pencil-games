@@ -26,7 +26,24 @@ public abstract class ClientFieldGame<C> extends ClientGame implements FieldGame
     public void onStart() {
         ClientPackets.registerPacketType(PlayerMoveS2CPacket.PACKET_TYPE);
         ClientPackets.registerPacketType(InvalidMoveS2CPacket.PACKET_TYPE);
-        ClientPackets.registerReceiver(PlayerMoveS2CPacket.PACKET_TYPE, this::onPlayerMove);
+
+        ClientPackets.registerReceiver(PlayerMoveS2CPacket.PACKET_TYPE, (packet, context) -> {
+            UUID player = packet.playerID();
+            int x = packet.x();
+            int y = packet.y();
+
+            handleMove(player, x, y);
+        });
+        // Restore the correct cell state if the player made an invalid move
+        ClientPackets.registerReceiver(InvalidMoveS2CPacket.PACKET_TYPE, (packet, context) -> {
+            int x = packet.x();
+            int y = packet.y();
+
+            @SuppressWarnings({"unchecked"})
+            C lastState = (C) packet.lastState();
+
+            gameField.set(x, y, lastState);
+        });
     }
 
     @Override
@@ -54,14 +71,6 @@ public abstract class ClientFieldGame<C> extends ClientGame implements FieldGame
 
         handleMove(lobby.getLocalPlayer().getId(), x, y);
         lobby.sendPacket(new PlayerMoveC2SPacket(x, y));
-    }
-
-    private void onPlayerMove(PlayerMoveS2CPacket packet, ClientPackets.ClientPacketContext context) {
-        UUID player = packet.playerID();
-        int x = packet.x();
-        int y = packet.y();
-
-        handleMove(player, x, y);
     }
 
     @Override
