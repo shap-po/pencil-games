@@ -1,5 +1,6 @@
 package com.github.shap_po.pencilgames.client.game.abc.field;
 
+import com.github.shap_po.pencilgames.client.PencilGamesClient;
 import com.github.shap_po.pencilgames.client.game.ClientGame;
 import com.github.shap_po.pencilgames.client.network.ClientGameLobby;
 import com.github.shap_po.pencilgames.client.network.ClientPackets;
@@ -74,7 +75,13 @@ public abstract class ClientFieldGame<C> extends ClientGame implements FieldGame
             return;
         }
 
-        handleMove(lobby.getLocalPlayer().getId(), x, y);
+        UUID playerId = lobby.getLocalPlayerId();
+        if (playerId == null) {
+            PencilGamesClient.LOGGER.warn("Tried to make a move before the player id was set");
+            return;
+        }
+
+        handleMove(playerId, x, y);
         lobby.sendPacket(new PlayerMoveC2SPacket(x, y));
     }
 

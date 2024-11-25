@@ -30,7 +30,7 @@ public class JoinMenu extends MenuScreen {
             try {
                 PencilGamesClient.clientLobby.connect(ip, port);
             } catch (IOException ex) {
-                throw new RuntimeException(ex);
+                PencilGamesClient.LOGGER.error("Failed to connect to server: {}", ex.getMessage());
             }
         });
     }

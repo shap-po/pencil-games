@@ -8,12 +8,10 @@ import com.github.shap_po.pencilgames.common.game.GameLobby;
 import com.github.shap_po.pencilgames.common.network.ConnectionHandler;
 import com.github.shap_po.pencilgames.common.network.packet.Packet;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.game.StartGameS2CPacket;
-import com.github.shap_po.pencilgames.common.network.packet.s2c.player.PlayerConnectS2CPacket;
-import com.github.shap_po.pencilgames.common.network.packet.s2c.player.PlayerDisconnectS2CPacket;
-import com.github.shap_po.pencilgames.common.network.packet.s2c.player.PlayerMessageS2CPacket;
-import com.github.shap_po.pencilgames.common.network.packet.s2c.player.SyncPlayerListS2CPacket;
+import com.github.shap_po.pencilgames.common.network.packet.s2c.player.*;
 import com.github.shap_po.pencilgames.common.util.Identifier;
 import com.github.shap_po.pencilgames.common.util.LoggerUtils;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -30,7 +28,7 @@ import java.util.UUID;
 public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
     public static final Logger LOGGER = LoggerUtils.getLogger();
     private final Map<UUID, ClientPlayer> players = new HashMap<>();
-    private ClientPlayer localPlayer;
+    private @Nullable UUID localPlayerId; // can be null before syncing with the server
     private Client2ServerConnection connectionHandler;
     private Identifier currentGameId;
     private ClientGame currentGame;
@@ -52,6 +50,15 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
             if (player != null) {
                 LOGGER.info("Received message from {}: {}", player, packet.message());
             }
+        });
+        ClientPackets.REGISTRY.registerReceiver(SyncPlayerIdS2CPacket.PACKET_TYPE, (packet, context) -> {
+            if (localPlayerId != null) {
+                LOGGER.warn("Received player id sync packed when the id is already set");
+                return;
+            }
+
+            LOGGER.info("Syncing player id: {}", packet.playerId());
+            localPlayerId = packet.playerId();
         });
         ClientPackets.REGISTRY.registerReceiver(SyncPlayerListS2CPacket.PACKET_TYPE, (packet, context) -> {
             LOGGER.info("Syncing player list: {}", packet.playerIds());
@@ -77,7 +84,6 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
             LOGGER.info("Server started game: {}", gameId);
             PencilGamesClient.gameWindow.setGameScreen(currentGame.getGameScreen(PencilGamesClient.gameWindow));
         });
-        // TODO: Sync local player
     }
 
     /**
@@ -133,8 +139,8 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
         return players;
     }
 
-    public ClientPlayer getLocalPlayer() {
-        return localPlayer;
+    public @Nullable UUID getLocalPlayerId() {
+        return localPlayerId;
     }
 
     public void sendPacket(Packet packet) {

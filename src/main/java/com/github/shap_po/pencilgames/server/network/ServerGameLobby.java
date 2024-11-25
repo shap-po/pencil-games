@@ -10,6 +10,7 @@ import com.github.shap_po.pencilgames.common.network.packet.Packet;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.game.StartGameS2CPacket;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.player.PlayerConnectS2CPacket;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.player.PlayerDisconnectS2CPacket;
+import com.github.shap_po.pencilgames.common.network.packet.s2c.player.SyncPlayerIdS2CPacket;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.player.SyncPlayerListS2CPacket;
 import com.github.shap_po.pencilgames.server.PencilGamesServer;
 
@@ -42,15 +43,23 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
             // add player and check if successful
             boolean result = addPlayer(player.getId(), player);
 
-            if (result) {
-                // send the player list to the new player
-                Collection<UUID> playerIds = new LinkedList<>(players.keySet());
-                player.connectionHandler()
-                    .sendPacket(new SyncPlayerListS2CPacket(playerIds));
-
-                // notify other players of the new player
-                broadcastPacket(new PlayerConnectS2CPacket(player.getId()));
+            if (!result) {
+                PencilGamesServer.LOGGER.info("Duplication of player id {} detected", player.getId());
+                player.connectionHandler().close();
+                return;
             }
+
+            // sync player's id so they know their own
+            player.connectionHandler().sendPacket(new SyncPlayerIdS2CPacket(player.getId()));
+
+            // send the player list to the new player
+            Collection<UUID> playerIds = new LinkedList<>(players.keySet());
+            player.connectionHandler()
+                .sendPacket(new SyncPlayerListS2CPacket(playerIds));
+
+            // notify other players of the new player
+            broadcastPacket(new PlayerConnectS2CPacket(player.getId()));
+
         }));
         onPlayerDisconnect.register((player -> {
             players.remove(player.getId());

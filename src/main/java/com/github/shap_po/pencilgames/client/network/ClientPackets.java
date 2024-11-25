@@ -22,6 +22,7 @@ public class ClientPackets {
         registerPacketType(PlayerKickS2CPacket.PACKET_TYPE);
         registerPacketType(PlayerMessageS2CPacket.PACKET_TYPE);
         registerPacketType(PlayersWinS2CPacket.PACKET_TYPE);
+        registerPacketType(SyncPlayerIdS2CPacket.PACKET_TYPE);
         registerPacketType(SyncPlayerListS2CPacket.PACKET_TYPE);
 
         registerPacketType(StartGameS2CPacket.PACKET_TYPE);
