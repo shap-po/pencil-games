@@ -23,11 +23,6 @@ public class ClientTicTacToeGame extends ClientFieldGame<TicTacToeGame.Cell> imp
     }
 
     @Override
-    public GameField<Cell> getGameField() {
-        return null;
-    }
-
-    @Override
     public Cell playerToCell(UUID playerId) {
         return playerToCellMap.getOrDefault(playerId, Cell.EMPTY);
     }

@@ -4,6 +4,7 @@ import com.github.shap_po.pencilgames.client.network.ClientGameLobby;
 import com.github.shap_po.pencilgames.client.ui.GameWindow;
 import com.github.shap_po.pencilgames.common.network.packet.c2s.PlayerMessageC2SPacket;
 import com.github.shap_po.pencilgames.common.util.LoggerUtils;
+import com.github.shap_po.pencilgames.server.PencilGamesServer;
 import com.github.shap_po.pencilgames.server.network.ServerGameLobby;
 import org.slf4j.Logger;
 
@@ -24,15 +25,19 @@ public class PencilGamesClient {
 
         clientLobby.start();
         gameWindow.setVisible(true);
-        run(isHost);
+//        run(isHost);
     }
 
     private static void run(boolean host) {
         try {
             if (host) {
                 try {
-                    ServerGameLobby serverLobby = new ServerGameLobby();
-                    serverLobby.start();
+                    if (PencilGamesServer.serverGameLobby != null) {
+                        PencilGamesServer.serverGameLobby.disconnect();
+                    }
+
+                    PencilGamesServer.serverGameLobby = new ServerGameLobby();
+                    PencilGamesServer.serverGameLobby.start();
                 } catch (IOException e) {
                     LOGGER.error("Failed to start server", e);
                 }

@@ -2,9 +2,12 @@ package com.github.shap_po.pencilgames.server.network;
 
 import com.github.shap_po.pencilgames.common.event.type.BiConsumerEvent;
 import com.github.shap_po.pencilgames.common.event.type.ConsumerEvent;
+import com.github.shap_po.pencilgames.common.game.Game;
+import com.github.shap_po.pencilgames.common.game.GameFactory;
 import com.github.shap_po.pencilgames.common.game.GameLobby;
 import com.github.shap_po.pencilgames.common.network.ConnectionHandler;
 import com.github.shap_po.pencilgames.common.network.packet.Packet;
+import com.github.shap_po.pencilgames.common.network.packet.s2c.game.StartGameS2CPacket;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.player.PlayerConnectS2CPacket;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.player.PlayerDisconnectS2CPacket;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.player.SyncPlayerListS2CPacket;
@@ -13,6 +16,7 @@ import com.github.shap_po.pencilgames.server.PencilGamesServer;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.*;
 
 /**
@@ -25,7 +29,10 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
     public final BiConsumerEvent<ServerPlayer, Packet> onPlayerPacket = BiConsumerEvent.create();
 
     private final ServerSocket serverSocket;
+
     private final Map<UUID, ServerPlayer> players = new HashMap<>();
+    private GameFactory<ServerGameLobby, Game<ServerGameLobby>> gameFactory;
+    private Game<ServerGameLobby> currentGame;
 
     public ServerGameLobby(int port) throws IOException {
         super("ServerGameLobby");
@@ -74,6 +81,8 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
         while (serverSocket.isBound() && !serverSocket.isClosed()) {
             try {
                 acceptConnection();
+            } catch (SocketException e) {
+                PencilGamesServer.LOGGER.info("Server socket closed");
             } catch (IOException e) {
                 PencilGamesServer.LOGGER.error("Error while accepting connection", e);
             }
@@ -95,6 +104,9 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
         thread.start();
     }
 
+    public void setGameFactory(GameFactory<ServerGameLobby, Game<ServerGameLobby>> gameFactory) {
+        this.gameFactory = gameFactory;
+    }
 
     public void broadcastPacket(Packet packet) {
         for (ServerPlayer player : getPlayers().values()) {
@@ -109,6 +121,16 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
             }
             player.connectionHandler().sendPacket(packet);
         }
+    }
+
+    public void startGame() {
+        if (currentGame != null) {
+            currentGame.end();
+        }
+
+        currentGame = gameFactory.apply(this);
+        currentGame.start();
+        broadcastPacket(new StartGameS2CPacket(gameFactory.getId()));
     }
 
     public void disconnect() {

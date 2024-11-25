@@ -29,6 +29,14 @@ public abstract class Game<L extends GameLobby<?>> {
      */
     abstract public void onEnd();
 
+    public void start() {
+        this.onStart();
+    }
+
+    public void end() {
+        this.onEnd();
+    }
+
     public int getCurrentPlayerIndex() {
         return currentPlayerIndex;
     }

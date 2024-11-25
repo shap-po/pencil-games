@@ -5,10 +5,17 @@ import com.github.shap_po.pencilgames.client.ui.GameWindow;
 import javax.swing.*;
 import java.awt.event.ActionListener;
 
-public class MenuPanel extends JPanel {
+public abstract class ContentPanel extends JPanel {
     protected final GameWindow root;
 
-    public MenuPanel(GameWindow root) {
+    /**
+     * Creates a new ContentPanel
+     *
+     * @param root       root window
+     * @param doPopulate whether to populate the panel on creation.
+     *                   Sometimes, some variables need to be set before populating
+     */
+    public ContentPanel(GameWindow root, boolean doPopulate) {
         super(false);
         this.root = root;
 
@@ -17,6 +24,19 @@ public class MenuPanel extends JPanel {
         // center contents
         setAlignmentX(CENTER_ALIGNMENT);
         setAlignmentY(CENTER_ALIGNMENT);
+
+        if (doPopulate) {
+            populate();
+        }
+    }
+
+    /**
+     * Creates a new ContentPanel and populates it
+     *
+     * @param root root window
+     */
+    public ContentPanel(GameWindow root) {
+        this(root, true);
     }
 
     protected void addButton(String text, ActionListener actionListener) {
@@ -32,4 +52,6 @@ public class MenuPanel extends JPanel {
     protected void addBackButton() {
         addBackButton(false);
     }
+
+    abstract protected void populate();
 }

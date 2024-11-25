@@ -1,5 +1,6 @@
 package com.github.shap_po.pencilgames.server.game.impl;
 
+import com.github.shap_po.pencilgames.common.game.Game;
 import com.github.shap_po.pencilgames.common.game.GameFactory;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.data.GameField;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.packet.s2c.PlayerMoveS2CPacket;
@@ -46,7 +47,7 @@ public class ServerTicTacToeGame extends ServerFieldGame<TicTacToeGame.Cell> imp
         lobby.broadcastPacket(new PlayerMoveS2CPacket(playerId, x, y));
     }
 
-    public static GameFactory<ServerGameLobby, ServerTicTacToeGame> getFactory() {
+    public static GameFactory<ServerGameLobby, Game<ServerGameLobby>> getFactory() {
         return new GameFactory<>(TicTacToeGame.GAME_ID, ServerTicTacToeGame::new);
     }
 }

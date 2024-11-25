@@ -1,12 +1,18 @@
 package com.github.shap_po.pencilgames.client.network;
 
+import com.github.shap_po.pencilgames.client.PencilGamesClient;
+import com.github.shap_po.pencilgames.client.game.ClientGame;
+import com.github.shap_po.pencilgames.client.game.ClientGameFactoryRegistry;
+import com.github.shap_po.pencilgames.common.game.GameFactory;
 import com.github.shap_po.pencilgames.common.game.GameLobby;
 import com.github.shap_po.pencilgames.common.network.ConnectionHandler;
 import com.github.shap_po.pencilgames.common.network.packet.Packet;
+import com.github.shap_po.pencilgames.common.network.packet.s2c.game.StartGameS2CPacket;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.player.PlayerConnectS2CPacket;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.player.PlayerDisconnectS2CPacket;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.player.PlayerMessageS2CPacket;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.player.SyncPlayerListS2CPacket;
+import com.github.shap_po.pencilgames.common.util.Identifier;
 import com.github.shap_po.pencilgames.common.util.LoggerUtils;
 import org.slf4j.Logger;
 
@@ -26,6 +32,8 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
     private final Map<UUID, ClientPlayer> players = new HashMap<>();
     private ClientPlayer localPlayer;
     private Client2ServerConnection connectionHandler;
+    private Identifier currentGameId;
+    private ClientGame currentGame;
 
     /**
      * Creates a new game lobby and registers receivers for base packets
@@ -51,6 +59,23 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
             for (UUID playerId : packet.playerIds()) {
                 addPlayer(playerId, new ClientPlayer(playerId));
             }
+        });
+        ClientPackets.REGISTRY.registerReceiver(StartGameS2CPacket.PACKET_TYPE, (packet, context) -> {
+            Identifier gameId = packet.gameFactoryId();
+            GameFactory<ClientGameLobby, ? extends ClientGame> gameFactory = ClientGameFactoryRegistry.REGISTRY.get(gameId);
+
+            if (gameFactory == null) {
+                LOGGER.warn("Server started an unknown game: {}", gameId);
+                connectionHandler.close();
+                return;
+            }
+
+            currentGameId = gameId;
+            currentGame = gameFactory.apply(this);
+            currentGame.start();
+
+            LOGGER.info("Server started game: {}", gameId);
+            PencilGamesClient.gameWindow.setGameScreen(currentGame.getGameScreen(PencilGamesClient.gameWindow));
         });
         // TODO: Sync local player
     }

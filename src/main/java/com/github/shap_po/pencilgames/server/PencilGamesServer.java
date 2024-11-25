@@ -11,10 +11,11 @@ import java.io.IOException;
  * All server-related logic use LOGGER from this class.
  */
 public class PencilGamesServer {
-    public static Logger LOGGER = LoggerUtils.getLogger();
+    public static final Logger LOGGER = LoggerUtils.getLogger();
+    public static ServerGameLobby serverGameLobby;
 
     public static void main(String[] args) throws IOException {
-        ServerGameLobby serverGameLobby = new ServerGameLobby();
+        serverGameLobby = new ServerGameLobby();
         serverGameLobby.start();
     }
 }

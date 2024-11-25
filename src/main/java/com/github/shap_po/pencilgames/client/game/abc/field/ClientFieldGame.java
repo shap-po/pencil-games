@@ -23,6 +23,11 @@ public abstract class ClientFieldGame<C> extends ClientGame implements FieldGame
     }
 
     @Override
+    public GameField<C> getGameField() {
+        return gameField;
+    }
+
+    @Override
     public void onStart() {
         ClientPackets.registerPacketType(PlayerMoveS2CPacket.PACKET_TYPE);
         ClientPackets.registerPacketType(InvalidMoveS2CPacket.PACKET_TYPE);

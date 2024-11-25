@@ -56,6 +56,6 @@ public record GameField<C>(List<List<C>> cells) {
     }
 
     public boolean isOnField(int x, int y) {
-        return x >= getWidth() || y >= getHeight() || x < 0 || y < 0;
+        return x >= 0 && y >= 0 && x < getWidth() && y < getHeight();
     }
 }

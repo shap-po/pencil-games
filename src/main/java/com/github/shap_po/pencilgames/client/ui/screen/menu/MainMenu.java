@@ -1,23 +1,26 @@
 package com.github.shap_po.pencilgames.client.ui.screen.menu;
 
 import com.github.shap_po.pencilgames.client.ui.GameWindow;
-import com.github.shap_po.pencilgames.client.ui.util.MenuPanel;
 
 import javax.swing.*;
 
-public class MainMenu extends MenuPanel {
+public class MainMenu extends MenuScreen {
     public MainMenu(GameWindow root) {
-        super(root);
+        super(root, false);
+    }
+
+    @Override
+    protected void populate() {
         add(new JLabel("Pencil Games"));
 
         addButton("Join Game", e -> {
-            root.setMenuState(GameWindow.State.JOIN_MENU);
+            root.setContentState(GameWindow.ScreenState.JOIN_MENU);
         });
         addButton("Host Game", e -> {
-            root.setMenuState(GameWindow.State.HOST_MENU);
+            root.setContentState(GameWindow.ScreenState.HOST_MENU);
         });
         addButton("Settings", e -> {
-            root.setMenuState(GameWindow.State.SETTINGS_MENU);
+            root.setContentState(GameWindow.ScreenState.SETTINGS_MENU);
         });
         addButton("Exit", e -> {
             System.exit(0);

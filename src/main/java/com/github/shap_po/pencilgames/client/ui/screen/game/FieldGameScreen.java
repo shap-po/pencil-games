@@ -8,9 +8,13 @@ import javax.swing.*;
 public class FieldGameScreen<C> extends GameScreen<ClientFieldGame<C>> {
     public FieldGameScreen(GameWindow root, ClientFieldGame<C> game) {
         super(root, game);
+    }
 
+    @Override
+    protected void populate() {
         JPanel panel = new JPanel();
         panel.setLayout(new javax.swing.BoxLayout(panel, javax.swing.BoxLayout.Y_AXIS));
+
         for (int y = 0; y < game.getGameField().getHeight(); y++) {
             JPanel row = new JPanel();
             row.setLayout(new javax.swing.BoxLayout(row, javax.swing.BoxLayout.X_AXIS));
@@ -30,6 +34,6 @@ public class FieldGameScreen<C> extends GameScreen<ClientFieldGame<C>> {
             panel.add(row);
         }
 
-        this.root.add(panel);
+        add(panel);
     }
 }
