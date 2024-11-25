@@ -93,7 +93,7 @@ public class ConnectionHandler extends Thread {
         }
 
         if (packet.getType().side() != side) {
-            LOGGER.error("Received packet of wrong side {} from {}", packet.getType().side(), socket.getInetAddress());
+            LOGGER.error("Received a \"{}\" packet of wrong side \"{}\" from {}", packet.getType(), packet.getType().side(), socket.getInetAddress());
             return null;
         }
 

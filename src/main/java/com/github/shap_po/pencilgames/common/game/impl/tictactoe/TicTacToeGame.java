@@ -16,7 +16,7 @@ public interface TicTacToeGame extends FieldGame<TicTacToeGame.Cell> {
     Cell playerToCell(UUID playerId);
 
     enum Cell {
-        EMPTY(null), X("x"), O("o");
+        EMPTY(" "), X("x"), O("o");
 
         private final String symbol;
 
@@ -27,6 +27,10 @@ public interface TicTacToeGame extends FieldGame<TicTacToeGame.Cell> {
         @Override
         public String toString() {
             return symbol;
+        }
+
+        public static Cell of(int i) {
+            return Cell.values()[i];
         }
     }
 }

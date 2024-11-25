@@ -5,6 +5,7 @@ import com.github.shap_po.pencilgames.common.game.impl.abc.field.FieldGame;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.data.GameField;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.packet.c2s.PlayerMoveC2SPacket;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.packet.s2c.InvalidMoveS2CPacket;
+import com.github.shap_po.pencilgames.common.game.impl.abc.field.packet.s2c.PlayerMoveS2CPacket;
 import com.github.shap_po.pencilgames.server.network.ServerGameLobby;
 import com.github.shap_po.pencilgames.server.network.ServerPackets;
 import com.github.shap_po.pencilgames.server.network.ServerPlayer;
@@ -33,12 +34,13 @@ public abstract class ServerFieldGame<C> extends Game<ServerGameLobby> implement
         int x = packet.x();
         int y = packet.y();
 
-        if (validateMove(player, x, y)) {
-            handleMove(player.getId(), x, y);
+        if (!validateMove(player, x, y)) {
+            player.connectionHandler().sendPacket(new InvalidMoveS2CPacket(x, y, gameField.get(x, y)));
             return;
         }
 
-        player.connectionHandler().sendPacket(new InvalidMoveS2CPacket(x, y, gameField.get(x, y)));
+        handleMove(player.getId(), x, y);
+        lobby.broadcastPacket(new PlayerMoveS2CPacket(player.getId(), x, y), player.getId());
     }
 
     /**

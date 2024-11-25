@@ -18,7 +18,7 @@ public class ClientTicTacToeGame extends ClientFieldGame<TicTacToeGame.Cell> imp
 
         List<UUID> players = lobby.getPlayers().keySet().stream().toList();
         for (int i = 0; i < players.size(); i++) {
-            this.playerToCellMap.put(players.get(i), Cell.values()[i]);
+            this.playerToCellMap.put(players.get(i), Cell.of(i + 1));
         }
     }
 
@@ -33,8 +33,11 @@ public class ClientTicTacToeGame extends ClientFieldGame<TicTacToeGame.Cell> imp
     }
 
     @Override
-    public void handleMove(UUID playerId, int x, int y) {
-        gameField.set(x, y, playerToCell(playerId));
+    public Cell handleMove(UUID playerId, int x, int y) {
+        Cell c = playerToCell(playerId);
+        gameField.set(x, y, c);
+
+        return c;
     }
 
     public static GameFactory<ClientGameLobby, ClientTicTacToeGame> getFactory() {

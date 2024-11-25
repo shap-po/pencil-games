@@ -14,14 +14,14 @@ import java.util.List;
 import java.util.UUID;
 
 public class ServerTicTacToeGame extends ServerFieldGame<TicTacToeGame.Cell> implements TicTacToeGame {
-    private final HashMap<UUID, TicTacToeGame.Cell> playerToCellMap = new HashMap<>();
+    private final HashMap<UUID, Cell> playerToCellMap = new HashMap<>();
 
     public ServerTicTacToeGame(ServerGameLobby lobby) {
-        super(lobby, GameField.of(TicTacToeGame.Cell.EMPTY, TicTacToeGame.size.left(), TicTacToeGame.size.right()));
+        super(lobby, GameField.of(Cell.EMPTY, size.left(), size.right()));
 
         List<UUID> players = lobby.getPlayers().keySet().stream().toList();
         for (int i = 0; i < players.size(); i++) {
-            this.playerToCellMap.put(players.get(i), TicTacToeGame.Cell.values()[i]);
+            this.playerToCellMap.put(players.get(i), Cell.values()[i]);
         }
     }
 
@@ -32,22 +32,26 @@ public class ServerTicTacToeGame extends ServerFieldGame<TicTacToeGame.Cell> imp
 
     @Override
     public Cell playerToCell(UUID playerId) {
-        return playerToCellMap.getOrDefault(playerId, TicTacToeGame.Cell.EMPTY);
+        return playerToCellMap.getOrDefault(playerId, Cell.EMPTY);
     }
 
     @Override
     public boolean validateMove(ServerPlayer player, int x, int y) {
         // TODO: check if player's turn
-        return super.validateMove(player, x, y) && gameField.get(x, y) == TicTacToeGame.Cell.EMPTY;
+        return super.validateMove(player, x, y) && gameField.get(x, y) == Cell.EMPTY;
     }
 
     @Override
-    public void handleMove(UUID playerId, int x, int y) {
-        gameField.set(x, y, playerToCell(playerId));
+    public Cell handleMove(UUID playerId, int x, int y) {
+        Cell c = playerToCell(playerId);
+
+        gameField.set(x, y, c);
         lobby.broadcastPacket(new PlayerMoveS2CPacket(playerId, x, y));
+
+        return c;
     }
 
     public static GameFactory<ServerGameLobby, Game<ServerGameLobby>> getFactory() {
-        return new GameFactory<>(TicTacToeGame.GAME_ID, ServerTicTacToeGame::new);
+        return new GameFactory<>(GAME_ID, ServerTicTacToeGame::new);
     }
 }

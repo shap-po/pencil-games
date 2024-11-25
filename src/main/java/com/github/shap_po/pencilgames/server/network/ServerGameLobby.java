@@ -99,30 +99,46 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
         disconnect();
     }
 
+    /**
+     * Accepts a new connection, creates a thread for it and redirects connection events to the lobby.
+     *
+     * @throws IOException if the connection fails
+     */
     private void acceptConnection() throws IOException {
         Socket connection = serverSocket.accept();
 
         UUID playerId = UUID.randomUUID();
-        Server2ClientConnection thread = new Server2ClientConnection(connection);
-        ServerPlayer player = new ServerPlayer(playerId, thread);
+        Server2ClientConnection clientConnection = new Server2ClientConnection(connection);
+        ServerPlayer player = new ServerPlayer(playerId, clientConnection);
 
-        thread.onConnect.register(() -> onPlayerConnect.accept(player));
-        thread.onDisconnect.register(() -> onPlayerDisconnect.accept(player));
-        thread.onPacket.register((packet) -> onPlayerPacket.accept(player, packet));
+        clientConnection.onConnect.register(() -> onPlayerConnect.accept(player));
+        clientConnection.onDisconnect.register(() -> onPlayerDisconnect.accept(player));
+        clientConnection.onPacket.register((packet) -> onPlayerPacket.accept(player, packet));
 
-        thread.start();
+        clientConnection.start();
     }
 
     public void setGameFactory(GameFactory<ServerGameLobby, Game<ServerGameLobby>> gameFactory) {
         this.gameFactory = gameFactory;
     }
 
+    /**
+     * Broadcast a packet to all players.
+     *
+     * @param packet the packet
+     */
     public void broadcastPacket(Packet packet) {
         for (ServerPlayer player : getPlayers().values()) {
             player.connectionHandler().sendPacket(packet);
         }
     }
 
+    /**
+     * Broadcast a packet to all players except the specified one.
+     *
+     * @param packet the packet
+     * @param except the ID of the player to exclude
+     */
     public void broadcastPacket(Packet packet, UUID except) {
         for (ServerPlayer player : getPlayers().values()) {
             if (player.getId().equals(except)) {

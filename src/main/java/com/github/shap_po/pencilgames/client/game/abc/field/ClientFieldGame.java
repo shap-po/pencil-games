@@ -12,15 +12,19 @@ import com.github.shap_po.pencilgames.common.game.impl.abc.field.data.GameField;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.packet.c2s.PlayerMoveC2SPacket;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.packet.s2c.InvalidMoveS2CPacket;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.packet.s2c.PlayerMoveS2CPacket;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 public abstract class ClientFieldGame<C> extends ClientGame implements FieldGame<C> {
     protected final GameField<C> gameField;
+    protected final FieldGameScreen<C> gameScreen;
 
     public ClientFieldGame(ClientGameLobby lobby, GameField<C> gameField) {
         super(lobby);
+
         this.gameField = gameField;
+        this.gameScreen = new FieldGameScreen<>(PencilGamesClient.gameWindow, this);
     }
 
     @Override
@@ -38,8 +42,10 @@ public abstract class ClientFieldGame<C> extends ClientGame implements FieldGame
             int x = packet.x();
             int y = packet.y();
 
-            handleMove(player, x, y);
-        });
+            C newState = handleMove(player, x, y);
+
+            gameScreen.setCell(x, y, newState);
+         });
         // Restore the correct cell state if the player made an invalid move
         ClientPackets.registerReceiver(InvalidMoveS2CPacket.PACKET_TYPE, (packet, context) -> {
             int x = packet.x();
@@ -70,23 +76,32 @@ public abstract class ClientFieldGame<C> extends ClientGame implements FieldGame
         return gameField.isOnField(x, y);
     }
 
-    public void move(int x, int y) {
+    /**
+     * Handles player's move on the field and returns the new cell state.
+     *
+     * @param x x coordinate
+     * @param y y coordinate
+     * @return the new cell state
+     */
+    public @Nullable C move(int x, int y) {
         if (!validateMove(x, y)) {
-            return;
+            return null;
         }
 
         UUID playerId = lobby.getLocalPlayerId();
         if (playerId == null) {
             PencilGamesClient.LOGGER.warn("Tried to make a move before the player id was set");
-            return;
+            return null;
         }
 
         handleMove(playerId, x, y);
         lobby.sendPacket(new PlayerMoveC2SPacket(x, y));
+
+        return gameField.get(x, y);
     }
 
     @Override
     public GameScreen<ClientFieldGame<C>> getGameScreen(GameWindow root) {
-        return new FieldGameScreen<>(root, this);
+        return gameScreen;
     }
 }

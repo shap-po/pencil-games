@@ -1,11 +1,20 @@
 package com.github.shap_po.pencilgames.common.game.impl.abc.field.data;
 
+import com.github.shap_po.pencilgames.common.event.type.ConsumerEvent;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
-public record GameField<C>(List<List<C>> cells) {
+public class GameField<C> {
+    private final List<List<C>> cells;
+    public final ConsumerEvent<ChangeEvent<C>> onChange = new ConsumerEvent<>();
+
+    public GameField(List<List<C>> cells) {
+        this.cells = cells;
+    }
+
     public static <C> GameField<C> of(BiFunction<Integer, Integer, C> valueFactory, int width, int height) {
         List<List<C>> cells = new ArrayList<>(height);
 
@@ -49,13 +58,19 @@ public record GameField<C>(List<List<C>> cells) {
     }
 
     public void set(int x, int y, C value) {
-        if (x >= getWidth() || y >= getHeight()) {
+        if (!isOnField(x, y)) {
             return;
         }
+        C oldValue = get(x, y);
         cells.get(y).set(x, value);
+
+        onChange.accept(new ChangeEvent<>(x, y, oldValue, value));
     }
 
     public boolean isOnField(int x, int y) {
         return x >= 0 && y >= 0 && x < getWidth() && y < getHeight();
+    }
+
+    public record ChangeEvent<C>(int x, int y, C oldValue, C newValue) {
     }
 }
