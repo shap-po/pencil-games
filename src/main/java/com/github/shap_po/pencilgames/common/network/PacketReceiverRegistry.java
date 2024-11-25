@@ -162,8 +162,8 @@ public class PacketReceiverRegistry<C> extends SimpleRegistry<PacketType<? exten
      * @return the event
      * @throws NullPointerException if the event does not exist
      */
-    @SuppressWarnings({"unchecked"})
     public <P extends Packet> BiConsumerEvent<P, C> getEvent(PacketType<P> packetType) throws NullPointerException {
+        @SuppressWarnings({"unchecked"})
         BiConsumerEvent<P, C> event = (BiConsumerEvent<P, C>) this.get(packetType);
         Objects.requireNonNull(event, "Packet handler of type " + packetType + " does not exist");
 
