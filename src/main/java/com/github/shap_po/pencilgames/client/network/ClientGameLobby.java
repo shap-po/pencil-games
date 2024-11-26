@@ -15,8 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.UUID;
 
 /**
@@ -27,7 +26,7 @@ import java.util.UUID;
  */
 public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
     public static final Logger LOGGER = LoggerUtils.getLogger();
-    private final Map<UUID, ClientPlayer> players = new HashMap<>();
+    private final LinkedHashMap<UUID, ClientPlayer> players = new LinkedHashMap<>();
     private @Nullable UUID localPlayerId; // can be null before syncing with the server
     private Client2ServerConnection connectionHandler;
     private Identifier currentGameId;
@@ -135,7 +134,7 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
     }
 
     @Override
-    public Map<UUID, ClientPlayer> getPlayers() {
+    public LinkedHashMap<UUID, ClientPlayer> getPlayers() {
         return players;
     }
 

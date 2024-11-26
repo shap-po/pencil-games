@@ -18,7 +18,10 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.UUID;
 
 /**
  * Represents a game lobby on the server side.
@@ -31,7 +34,7 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
 
     private final ServerSocket serverSocket;
 
-    private final Map<UUID, ServerPlayer> players = new HashMap<>();
+    private final LinkedHashMap<UUID, ServerPlayer> players = new LinkedHashMap<>();
     private GameFactory<ServerGameLobby, Game<ServerGameLobby>> gameFactory;
     private Game<ServerGameLobby> currentGame;
 
@@ -81,7 +84,7 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
     }
 
     @Override
-    public Map<UUID, ServerPlayer> getPlayers() {
+    public LinkedHashMap<UUID, ServerPlayer> getPlayers() {
         return players;
     }
 
