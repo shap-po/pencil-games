@@ -28,4 +28,9 @@ public class GameFactory<L extends GameLobby<?>, G extends Game<L>> implements F
     public G apply(L lobby) {
         return constructorFunction.apply(lobby);
     }
+
+    @Override
+    public String toString() {
+        return id.toString();
+    }
 }

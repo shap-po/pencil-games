@@ -22,7 +22,7 @@ import java.util.UUID;
  * A representation of a game lobby on the client side.
  * <p>
  * The connection handler of a lobby can be updated to a new one by calling
- * {@link #connect(String, int)}, {@link #connect(String)}, or {@link #disconnect()}
+ * {@link #connect(String, Integer)}, {@link #connect(String)}, or {@link #disconnect()}
  */
 public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
     public static final Logger LOGGER = LoggerUtils.getLogger();
@@ -93,11 +93,14 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
      * @param port port
      * @throws IOException if connection fails
      */
-    public void connect(String host, int port) throws IOException {
+    public void connect(String host, @Nullable Integer port) throws IOException {
         // disconnect old connection
         if (connectionHandler != null) {
+            LOGGER.info("Disconnecting from the old server");
             disconnect();
         }
+
+        port = port == null ? ConnectionHandler.DEFAULT_PORT : port;
 
         // create a new connection
         connectionHandler = new Client2ServerConnection(host, port);
@@ -127,10 +130,9 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
      *
      * @param host host's IP address
      * @throws IOException if connection fails
-     * @see #connect(String, int)
      */
     public void connect(String host) throws IOException {
-        this.connect(host, ConnectionHandler.DEFAULT_PORT);
+        this.connect(host, null);
     }
 
     @Override
@@ -155,6 +157,10 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
             connectionHandler.close();
         }
         LOGGER.info("Disconnected from server");
+
         players.clear();
+        localPlayerId = null;
+        currentGameId = null;
+        currentGame = null;
     }
 }

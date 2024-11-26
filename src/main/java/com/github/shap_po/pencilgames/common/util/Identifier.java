@@ -13,8 +13,26 @@ public record Identifier(String id) implements Comparable<Identifier>, Serializa
         return id.compareTo(other.id);
     }
 
-    public static Identifier of(String id) {
-        return new Identifier(id);
+    /**
+     * Creates an identifier.
+     *
+     * @param value the value
+     * @return the identifier
+     * @see #fromString for parsing
+     */
+    public static Identifier of(String value) {
+        return new Identifier(value);
+    }
+
+    /**
+     * Gets an identifier from a string.
+     *
+     * @param string the string
+     * @return the identifier
+     * @see #of for creating
+     */
+    public static Identifier fromString(String string) {
+        return new Identifier(string);
     }
 
     @Override

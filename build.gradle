@@ -22,6 +22,7 @@ dependencies {
     // utils
     implementation "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
     implementation "com.google.guava:guava:${project.guava_version}"
+    implementation "commons-cli:commons-cli:${project.commons_cli_version}" // cli parser
 }
 
 test {

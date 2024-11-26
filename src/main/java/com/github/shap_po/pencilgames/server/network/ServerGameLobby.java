@@ -14,6 +14,7 @@ import com.github.shap_po.pencilgames.common.network.packet.s2c.player.SyncPlaye
 import com.github.shap_po.pencilgames.common.network.packet.s2c.player.SyncPlayerListS2CPacket;
 import com.github.shap_po.pencilgames.server.PencilGamesServer;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -38,8 +39,11 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
     private GameFactory<ServerGameLobby, Game<ServerGameLobby>> gameFactory;
     private Game<ServerGameLobby> currentGame;
 
-    public ServerGameLobby(int port) throws IOException {
+    public ServerGameLobby(@Nullable Integer port) throws IOException {
         super("ServerGameLobby");
+
+        port = port == null ? ConnectionHandler.DEFAULT_PORT : port;
+
         serverSocket = new ServerSocket(port);
 
         onPlayerConnect.register((player -> {
@@ -80,7 +84,7 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
     }
 
     public ServerGameLobby() throws IOException {
-        this(ConnectionHandler.DEFAULT_PORT);
+        this(null);
     }
 
     @Override
@@ -119,6 +123,10 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
         clientConnection.onPacket.register((packet) -> onPlayerPacket.accept(player, packet));
 
         clientConnection.start();
+    }
+
+    public int getPort() {
+        return serverSocket.getLocalPort();
     }
 
     public void setGameFactory(GameFactory<ServerGameLobby, Game<ServerGameLobby>> gameFactory) {
