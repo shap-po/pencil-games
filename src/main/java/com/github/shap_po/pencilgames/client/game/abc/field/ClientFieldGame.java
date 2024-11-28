@@ -45,7 +45,7 @@ public abstract class ClientFieldGame<C> extends ClientGame implements FieldGame
             C newState = handleMove(player, x, y);
 
             gameScreen.setCell(x, y, newState);
-         });
+        });
         // Restore the correct cell state if the player made an invalid move
         ClientPackets.registerReceiver(InvalidMoveS2CPacket.PACKET_TYPE, (packet, context) -> {
             int x = packet.x();

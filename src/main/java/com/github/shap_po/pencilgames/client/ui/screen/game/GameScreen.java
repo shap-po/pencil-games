@@ -10,9 +10,9 @@ public abstract class GameScreen<G extends Game<ClientGameLobby>> extends Conten
 
     public GameScreen(GameWindow root, G game) {
         super(root, false);
-        this.game = game;
 
         // most game screens depend on the game, so set it before populating
+        this.game = game;
         populate();
     }
 

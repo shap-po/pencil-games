@@ -45,12 +45,21 @@ public abstract class ContentPanel extends JPanel {
         add(button);
     }
 
-    protected void addBackButton(boolean confirm) {
-        addButton("Back", e -> root.back(confirm));
+    protected void addButtonWithConfirm(String text, String confirmText, ActionListener actionListener) {
+        JButton button = new JButton(text);
+
+        button.addActionListener(e -> {
+            int confirmed = JOptionPane.showConfirmDialog(root, confirmText, "Confirm", JOptionPane.YES_NO_OPTION);
+            if (confirmed == JOptionPane.YES_OPTION) {
+                actionListener.actionPerformed(e);
+            }
+        });
+
+        add(button);
     }
 
     protected void addBackButton() {
-        addBackButton(false);
+        addButton("Back", e -> root.back());
     }
 
     abstract protected void populate();

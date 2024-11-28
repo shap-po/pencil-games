@@ -3,8 +3,8 @@ package com.github.shap_po.pencilgames.client.ui.screen.menu;
 import com.github.shap_po.pencilgames.client.ui.GameWindow;
 import com.github.shap_po.pencilgames.server.PencilGamesServer;
 
-public class StartGameScreen extends MenuScreen {
-    public StartGameScreen(GameWindow root) {
+public class StartGameMenu extends MenuScreen {
+    public StartGameMenu(GameWindow root) {
         super(root);
     }
 

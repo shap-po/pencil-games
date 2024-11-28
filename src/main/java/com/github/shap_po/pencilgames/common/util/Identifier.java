@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 /**
  * An identifier for an object. Most of the time used as a key in maps.
+ * <p>
+ * Makes it easy to distinguish text strings from identifiers in code.
  *
  * @param id the id. Must contain only lowercase letters, numbers, underscores, and forward slashes.
  */
@@ -15,21 +17,23 @@ public record Identifier(String id) implements Comparable<Identifier>, Serializa
 
     /**
      * Creates an identifier.
+     * <p>
+     * Use {@link #fromString} for parsing identifier strings.
      *
      * @param value the value
      * @return the identifier
-     * @see #fromString for parsing
      */
     public static Identifier of(String value) {
         return new Identifier(value);
     }
 
     /**
-     * Gets an identifier from a string.
+     * Parses an identifier from a string.
+     * <p>
+     * Use {@link #of} for creating identifiers.
      *
      * @param string the string
      * @return the identifier
-     * @see #of for creating
      */
     public static Identifier fromString(String string) {
         return new Identifier(string);

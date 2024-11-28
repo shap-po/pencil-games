@@ -4,7 +4,6 @@ import com.github.shap_po.pencilgames.client.PencilGamesClient;
 import com.github.shap_po.pencilgames.client.ui.screen.game.GameScreen;
 import com.github.shap_po.pencilgames.client.ui.screen.menu.*;
 import com.github.shap_po.pencilgames.client.ui.util.ContentPanel;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.HashMap;
@@ -28,7 +27,7 @@ public class GameWindow extends JFrame {
         menus.put(ScreenState.JOIN_MENU, new JoinMenu(this));
         menus.put(ScreenState.HOST_MENU, new HostMenu(this));
         menus.put(ScreenState.SETTINGS_MENU, new SettingsMenu(this));
-        menus.put(ScreenState.START_GAME_MENU, new StartGameScreen(this));
+        menus.put(ScreenState.START_GAME_MENU, new StartGameMenu(this));
 
         setContentPane(contentPanel);
 
@@ -123,45 +122,18 @@ public class GameWindow extends JFrame {
 
     /**
      * Go back in the state history and update the window content.
-     *
-     * @param confirmText text to show in the confirmation dialog.
-     *                    if null, no confirmation dialog will be shown
      */
-    public void back(@Nullable String confirmText) {
+    public void back() {
         if (stateHistory.isEmpty()) {
             return;
         }
 
-        if (confirmText != null) {
-            int confirmed = JOptionPane.showConfirmDialog(this, confirmText, "Confirm", JOptionPane.YES_NO_OPTION);
-            if (confirmed != JOptionPane.YES_OPTION) {
-                return;
-            }
-        }
-
-        boolean result = false;
-
         // some states (like the game screen) can't be re-created, skip them
+        boolean result = false;
         while (!result) {
             stateHistory.removeLast();
             result = updateContent();
         }
-    }
-
-    /**
-     * Go back in the state history and update the window content.
-     *
-     * @param confirm whether to show a confirmation dialog with the default text
-     */
-    public void back(boolean confirm) {
-        back(confirm ? "Are you sure you want to go back?" : null);
-    }
-
-    /**
-     * Go back in the state history and update the window content.
-     */
-    public void back() {
-        back(false);
     }
 
     public enum ScreenState {
