@@ -66,6 +66,10 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
                 addPlayer(playerId, new ClientPlayer(playerId));
             }
         });
+        ClientPackets.REGISTRY.registerReceiver(SyncPlayerOrderS2CPacket.PACKET_TYPE, (packet, context) -> {
+            LOGGER.info("Syncing player order: {}", packet.playersOrder());
+            setPlayerOrder(packet.playersOrder());
+        });
         ClientPackets.REGISTRY.registerReceiver(StartGameS2CPacket.PACKET_TYPE, (packet, context) -> {
             Identifier gameId = packet.gameFactoryId();
             GameFactory<ClientGameLobby, ? extends ClientGame> gameFactory = ClientGameFactoryRegistry.REGISTRY.get(gameId);

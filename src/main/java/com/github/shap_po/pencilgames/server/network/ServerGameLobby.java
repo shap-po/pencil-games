@@ -8,10 +8,7 @@ import com.github.shap_po.pencilgames.common.game.GameLobby;
 import com.github.shap_po.pencilgames.common.network.ConnectionHandler;
 import com.github.shap_po.pencilgames.common.network.packet.Packet;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.game.StartGameS2CPacket;
-import com.github.shap_po.pencilgames.common.network.packet.s2c.player.PlayerConnectS2CPacket;
-import com.github.shap_po.pencilgames.common.network.packet.s2c.player.PlayerDisconnectS2CPacket;
-import com.github.shap_po.pencilgames.common.network.packet.s2c.player.SyncPlayerIdS2CPacket;
-import com.github.shap_po.pencilgames.common.network.packet.s2c.player.SyncPlayerListS2CPacket;
+import com.github.shap_po.pencilgames.common.network.packet.s2c.player.*;
 import com.github.shap_po.pencilgames.server.PencilGamesServer;
 
 import javax.annotation.Nullable;
@@ -65,7 +62,7 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
                 .sendPacket(new SyncPlayerListS2CPacket(playerIds));
 
             // notify other players of the new player
-            broadcastPacket(new PlayerConnectS2CPacket(player.getId()));
+            broadcastPacket(new PlayerConnectS2CPacket(player.getId()), player.getId());
 
         }));
         onPlayerDisconnect.register((player -> {
@@ -163,6 +160,10 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
         if (currentGame != null) {
             currentGame.end();
         }
+
+        // Randomize player order
+        shufflePlayers();
+        broadcastPacket(new SyncPlayerOrderS2CPacket(getPlayers().keySet().stream().toList()));
 
         currentGame = gameFactory.apply(this);
         currentGame.start();
