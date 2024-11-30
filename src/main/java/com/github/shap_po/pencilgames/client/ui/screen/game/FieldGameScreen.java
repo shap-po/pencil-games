@@ -52,10 +52,14 @@ public class FieldGameScreen<C> extends GameScreen<ClientFieldGame<C>> {
             buttons.add(rowButtons);
         }
 
+        game.getGameField().onChange.register(event -> {
+            setCell(event.x(), event.y(), event.newValue());
+        });
+
         add(panel);
     }
 
-    public void setCell(int x, int y, C newState) {
+    private void setCell(int x, int y, C newState) {
         buttons.get(y).get(x).setText(newState.toString());
     }
 }

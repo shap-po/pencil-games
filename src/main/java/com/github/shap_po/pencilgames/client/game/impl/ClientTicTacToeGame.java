@@ -25,6 +25,13 @@ public class ClientTicTacToeGame extends ClientFieldGame<TicTacToeGame.Cell> imp
         return playerToCellMap.getOrDefault(playerId, Cell.EMPTY);
     }
 
+    /**
+     * Checks if the move is valid: is on the field, is the player's turn, and the cell is empty.
+     *
+     * @param x x coordinate
+     * @param y y coordinate
+     * @return true if the move is valid
+     */
     @Override
     public boolean validateMove(int x, int y) {
         return super.validateMove(x, y) && gameField.get(x, y) == Cell.EMPTY;
@@ -32,6 +39,8 @@ public class ClientTicTacToeGame extends ClientFieldGame<TicTacToeGame.Cell> imp
 
     @Override
     public Cell handleMove(UUID playerId, int x, int y) {
+        nextPlayer();
+
         Cell c = playerToCell(playerId);
         gameField.set(x, y, c);
 

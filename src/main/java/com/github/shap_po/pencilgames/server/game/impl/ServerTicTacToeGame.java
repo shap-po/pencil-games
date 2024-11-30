@@ -3,7 +3,6 @@ package com.github.shap_po.pencilgames.server.game.impl;
 import com.github.shap_po.pencilgames.common.game.Game;
 import com.github.shap_po.pencilgames.common.game.GameFactory;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.data.GameField;
-import com.github.shap_po.pencilgames.common.game.impl.abc.field.packet.s2c.PlayerMoveS2CPacket;
 import com.github.shap_po.pencilgames.common.game.impl.tictactoe.TicTacToeGame;
 import com.github.shap_po.pencilgames.server.PencilGamesServer;
 import com.github.shap_po.pencilgames.server.game.abc.field.ServerFieldGame;
@@ -34,20 +33,29 @@ public class ServerTicTacToeGame extends ServerFieldGame<TicTacToeGame.Cell> imp
         return playerToCellMap.getOrDefault(playerId, Cell.EMPTY);
     }
 
+
+    /**
+     * Checks if the move is valid: is on the field, is the player's turn, and the cell is empty.
+     *
+     * @param player the player performing the move
+     * @param x      x coordinate
+     * @param y      y coordinate
+     * @return true if the move is valid
+     */
     @Override
     public boolean validateMove(ServerPlayer player, int x, int y) {
-        // TODO: check if player's turn
         return super.validateMove(player, x, y) && gameField.get(x, y) == Cell.EMPTY;
     }
 
     @Override
     public Cell handleMove(UUID playerId, int x, int y) {
+        nextPlayer();
+
         Cell c = playerToCell(playerId);
 
         PencilGamesServer.LOGGER.debug("Player {} moved to ({}, {}) with cell {}", playerId, x, y, c);
 
         gameField.set(x, y, c);
-        lobby.broadcastPacket(new PlayerMoveS2CPacket(playerId, x, y));
 
         return c;
     }

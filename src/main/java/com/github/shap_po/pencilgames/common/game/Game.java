@@ -1,5 +1,9 @@
 package com.github.shap_po.pencilgames.common.game;
 
+import com.github.shap_po.pencilgames.common.game.player.Player;
+
+import java.util.UUID;
+
 /**
  * A base class for all game types.
  */
@@ -43,5 +47,15 @@ public abstract class Game<L extends GameLobby<?>> {
 
     public void nextPlayer() {
         this.playerTurn = (this.playerTurn + 1) % this.lobby.getPlayerManager().getPlayerCount();
+    }
+
+    public boolean isPlayerTurn(UUID playerId) {
+        Integer playerIndex = this.lobby.getPlayerManager().getPlayerIndex(playerId);
+        if (playerIndex == null) return false;
+        return this.playerTurn == playerIndex;
+    }
+
+    public boolean isPlayerTurn(Player player) {
+        return isPlayerTurn(player.getId());
     }
 }

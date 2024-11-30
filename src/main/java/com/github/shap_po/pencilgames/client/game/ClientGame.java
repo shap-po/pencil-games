@@ -11,4 +11,8 @@ public abstract class ClientGame extends Game<ClientGameLobby> {
     }
 
     abstract public GameScreen<?> getGameScreen(GameWindow root);
+
+    public boolean isMyTurn() {
+        return isPlayerTurn(lobby.getLocalPlayerId());
+    }
 }

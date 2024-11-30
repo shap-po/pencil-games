@@ -48,8 +48,7 @@ public abstract class ServerFieldGame<C> extends Game<ServerGameLobby> implement
     }
 
     /**
-     * Checks if the move is valid.
-     * Defaults to making sure the move is on the field.
+     * Checks if the move is valid: is on the field and is the player's turn.
      *
      * @param player the player performing the move
      * @param x      x coordinate
@@ -57,6 +56,6 @@ public abstract class ServerFieldGame<C> extends Game<ServerGameLobby> implement
      * @return true if the move is valid
      */
     public boolean validateMove(ServerPlayer player, int x, int y) {
-        return gameField.isOnField(x, y);
+        return gameField.isOnField(x, y) && isPlayerTurn(player);
     }
 }

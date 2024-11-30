@@ -42,9 +42,7 @@ public abstract class ClientFieldGame<C> extends ClientGame implements FieldGame
             int x = packet.x();
             int y = packet.y();
 
-            C newState = handleMove(player, x, y);
-
-            gameScreen.setCell(x, y, newState);
+            handleMove(player, x, y);
         });
         // Restore the correct cell state if the player made an invalid move
         ClientPackets.registerReceiver(InvalidMoveS2CPacket.PACKET_TYPE, (packet, context) -> {
@@ -65,15 +63,14 @@ public abstract class ClientFieldGame<C> extends ClientGame implements FieldGame
     }
 
     /**
-     * Checks if the move is valid.
-     * Defaults to making sure the move is on the field.
+     * Checks if the move is valid: is on the field and is the player's turn.
      *
      * @param x x coordinate
      * @param y y coordinate
      * @return true if the move is valid
      */
     public boolean validateMove(int x, int y) {
-        return gameField.isOnField(x, y);
+        return gameField.isOnField(x, y) && isMyTurn();
     }
 
     /**
