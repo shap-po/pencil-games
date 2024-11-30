@@ -1,6 +1,6 @@
 package com.github.shap_po.pencilgames.server.network;
 
-import com.github.shap_po.pencilgames.common.Player;
+import com.github.shap_po.pencilgames.common.game.player.Player;
 
 import java.util.UUID;
 

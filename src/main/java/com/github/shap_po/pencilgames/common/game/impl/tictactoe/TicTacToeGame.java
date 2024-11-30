@@ -4,6 +4,9 @@ import com.github.shap_po.pencilgames.common.game.impl.abc.field.FieldGame;
 import com.github.shap_po.pencilgames.common.util.Identifier;
 import com.github.shap_po.pencilgames.common.util.Pair;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public interface TicTacToeGame extends FieldGame<TicTacToeGame.Cell> {
@@ -15,8 +18,20 @@ public interface TicTacToeGame extends FieldGame<TicTacToeGame.Cell> {
 
     Cell playerToCell(UUID playerId);
 
+    static Map<UUID, Cell> createPlayerToCellMap(List<UUID> players) {
+        Map<UUID, Cell> playerToCellMap = new HashMap<>();
+
+        for (int i = 0; i < players.size(); i++) {
+            playerToCellMap.put(players.get(i), Cell.of(i + 1));
+        }
+
+        return playerToCellMap;
+    }
+
     enum Cell {
-        EMPTY(" "), X("x"), O("o");
+        EMPTY(" "),
+        X("x"), O("o"),
+        A("a"), B("b"), C("c"), D("d"), E("e"), F("f");
 
         private final String symbol;
 

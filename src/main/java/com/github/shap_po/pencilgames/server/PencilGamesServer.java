@@ -82,7 +82,7 @@ public class PencilGamesServer {
 
         // start the game when enough players connect
         serverGameLobby.onPlayerConnect.register((player) -> {
-            if (pts != null && serverGameLobby.getPlayers().size() >= pts) {
+            if (pts != null && serverGameLobby.getPlayerManager().getPlayerCount() >= pts) {
                 serverGameLobby.startGame();
             }
         });

@@ -5,24 +5,23 @@ import com.github.shap_po.pencilgames.common.game.GameFactory;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.data.GameField;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.packet.s2c.PlayerMoveS2CPacket;
 import com.github.shap_po.pencilgames.common.game.impl.tictactoe.TicTacToeGame;
+import com.github.shap_po.pencilgames.server.PencilGamesServer;
 import com.github.shap_po.pencilgames.server.game.abc.field.ServerFieldGame;
 import com.github.shap_po.pencilgames.server.network.ServerGameLobby;
 import com.github.shap_po.pencilgames.server.network.ServerPlayer;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class ServerTicTacToeGame extends ServerFieldGame<TicTacToeGame.Cell> implements TicTacToeGame {
-    private final HashMap<UUID, Cell> playerToCellMap = new HashMap<>();
+    private final Map<UUID, Cell> playerToCellMap;
 
     public ServerTicTacToeGame(ServerGameLobby lobby) {
         super(lobby, GameField.of(Cell.EMPTY, size.left(), size.right()));
 
-        List<UUID> players = lobby.getPlayers().keySet().stream().toList();
-        for (int i = 0; i < players.size(); i++) {
-            this.playerToCellMap.put(players.get(i), Cell.values()[i]);
-        }
+        List<UUID> players = lobby.getPlayerManager().getPlayerOrder();
+        this.playerToCellMap = TicTacToeGame.createPlayerToCellMap(players);
     }
 
     @Override
@@ -44,6 +43,8 @@ public class ServerTicTacToeGame extends ServerFieldGame<TicTacToeGame.Cell> imp
     @Override
     public Cell handleMove(UUID playerId, int x, int y) {
         Cell c = playerToCell(playerId);
+
+        PencilGamesServer.LOGGER.debug("Player {} moved to ({}, {}) with cell {}", playerId, x, y, c);
 
         gameField.set(x, y, c);
         lobby.broadcastPacket(new PlayerMoveS2CPacket(playerId, x, y));

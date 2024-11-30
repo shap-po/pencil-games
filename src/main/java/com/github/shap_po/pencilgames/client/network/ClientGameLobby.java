@@ -5,6 +5,7 @@ import com.github.shap_po.pencilgames.client.game.ClientGame;
 import com.github.shap_po.pencilgames.client.game.ClientGameFactoryRegistry;
 import com.github.shap_po.pencilgames.common.game.GameFactory;
 import com.github.shap_po.pencilgames.common.game.GameLobby;
+import com.github.shap_po.pencilgames.common.game.player.PlayerManager;
 import com.github.shap_po.pencilgames.common.network.ConnectionHandler;
 import com.github.shap_po.pencilgames.common.network.packet.Packet;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.game.StartGameS2CPacket;
@@ -15,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.UUID;
 
 /**
@@ -26,7 +26,9 @@ import java.util.UUID;
  */
 public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
     public static final Logger LOGGER = LoggerUtils.getLogger();
-    private final LinkedHashMap<UUID, ClientPlayer> players = new LinkedHashMap<>();
+
+    public final PlayerManager<ClientPlayer> playerManager = new PlayerManager<>();
+
     private @Nullable UUID localPlayerId; // can be null before syncing with the server
     private Client2ServerConnection connectionHandler;
     private Identifier currentGameId;
@@ -38,14 +40,14 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
     public ClientGameLobby() {
         ClientPackets.REGISTRY.registerReceiver(PlayerConnectS2CPacket.PACKET_TYPE, (packet, context) -> {
             LOGGER.info("Player {} connected", packet.playerId());
-            addPlayer(packet.playerId(), new ClientPlayer(packet.playerId()));
+            playerManager.addPlayer(new ClientPlayer(packet.playerId()));
         });
         ClientPackets.REGISTRY.registerReceiver(PlayerDisconnectS2CPacket.PACKET_TYPE, (packet, context) -> {
             LOGGER.info("Player {} disconnected", packet.playerId());
-            removePlayer(packet.playerId());
+            playerManager.removePlayer(packet.playerId());
         });
         ClientPackets.REGISTRY.registerReceiver(PlayerMessageS2CPacket.PACKET_TYPE, (packet, context) -> {
-            ClientPlayer player = players.getOrDefault(packet.playerId(), null);
+            ClientPlayer player = playerManager.getPlayer(packet.playerId());
             if (player != null) {
                 LOGGER.info("Received message from {}: {}", player, packet.message());
             }
@@ -61,14 +63,14 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
         });
         ClientPackets.REGISTRY.registerReceiver(SyncPlayerListS2CPacket.PACKET_TYPE, (packet, context) -> {
             LOGGER.info("Syncing player list: {}", packet.playerIds());
-            players.clear();
+            playerManager.clear();
             for (UUID playerId : packet.playerIds()) {
-                addPlayer(playerId, new ClientPlayer(playerId));
+                playerManager.addPlayer(playerId, new ClientPlayer(playerId));
             }
         });
         ClientPackets.REGISTRY.registerReceiver(SyncPlayerOrderS2CPacket.PACKET_TYPE, (packet, context) -> {
             LOGGER.info("Syncing player order: {}", packet.playersOrder());
-            setPlayerOrder(packet.playersOrder());
+            playerManager.setPlayerOrder(packet.playersOrder());
         });
         ClientPackets.REGISTRY.registerReceiver(StartGameS2CPacket.PACKET_TYPE, (packet, context) -> {
             Identifier gameId = packet.gameFactoryId();
@@ -140,8 +142,8 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
     }
 
     @Override
-    public LinkedHashMap<UUID, ClientPlayer> getPlayers() {
-        return players;
+    public PlayerManager<ClientPlayer> getPlayerManager() {
+        return playerManager;
     }
 
     public @Nullable UUID getLocalPlayerId() {
@@ -162,7 +164,7 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
         }
         LOGGER.info("Disconnected from server");
 
-        players.clear();
+        playerManager.clear();
         localPlayerId = null;
         currentGameId = null;
         currentGame = null;

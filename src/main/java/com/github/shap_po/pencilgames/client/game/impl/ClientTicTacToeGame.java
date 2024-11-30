@@ -6,20 +6,18 @@ import com.github.shap_po.pencilgames.common.game.GameFactory;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.data.GameField;
 import com.github.shap_po.pencilgames.common.game.impl.tictactoe.TicTacToeGame;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class ClientTicTacToeGame extends ClientFieldGame<TicTacToeGame.Cell> implements TicTacToeGame {
-    private final HashMap<UUID, Cell> playerToCellMap = new HashMap<>();
+    private final Map<UUID, Cell> playerToCellMap;
 
     public ClientTicTacToeGame(ClientGameLobby lobby) {
         super(lobby, GameField.of(Cell.EMPTY, TicTacToeGame.size.left(), TicTacToeGame.size.right()));
 
-        List<UUID> players = lobby.getPlayers().keySet().stream().toList();
-        for (int i = 0; i < players.size(); i++) {
-            this.playerToCellMap.put(players.get(i), Cell.of(i + 1));
-        }
+        List<UUID> players = lobby.getPlayerManager().getPlayerOrder();
+        this.playerToCellMap = TicTacToeGame.createPlayerToCellMap(players);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.github.shap_po.pencilgames.common;
+package com.github.shap_po.pencilgames.common.game.player;
 
 import java.util.UUID;
 

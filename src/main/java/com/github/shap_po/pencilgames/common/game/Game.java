@@ -5,7 +5,7 @@ package com.github.shap_po.pencilgames.common.game;
  */
 public abstract class Game<L extends GameLobby<?>> {
     protected final L lobby;
-    protected int currentPlayerIndex = 0;
+    protected int playerTurn = 0;
 
     public Game(L lobby) {
         this.lobby = lobby;
@@ -37,11 +37,11 @@ public abstract class Game<L extends GameLobby<?>> {
         this.onEnd();
     }
 
-    public int getCurrentPlayerIndex() {
-        return currentPlayerIndex;
+    public int getPlayerTurn() {
+        return playerTurn;
     }
 
     public void nextPlayer() {
-        this.currentPlayerIndex = (this.currentPlayerIndex + 1) % this.lobby.getPlayers().size();
+        this.playerTurn = (this.playerTurn + 1) % this.lobby.getPlayerManager().getPlayerCount();
     }
 }

@@ -37,6 +37,12 @@ public class PencilGamesClient {
             .hasArg()
             .type(Integer.class)
             .build())
+        .addOption(Option.builder("t")
+            .argName("title")
+            .desc("Window title")
+            .hasArg()
+            .type(String.class)
+            .build())
         .addOptions(PencilGamesServer.CLI_OPTIONS);
 
     public static void main(String[] args) {
@@ -57,6 +63,11 @@ public class PencilGamesClient {
         try {
             CommandLineParser parser = new DefaultParser();
             CommandLine line = parser.parse(CLI_OPTIONS, args);
+
+            String title = line.getParsedOptionValue("t");
+            if (title != null) {
+                gameWindow.setTitle(title);
+            }
 
             Integer port = line.getParsedOptionValue("p");
 

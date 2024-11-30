@@ -5,6 +5,7 @@ import com.github.shap_po.pencilgames.common.event.type.ConsumerEvent;
 import com.github.shap_po.pencilgames.common.game.Game;
 import com.github.shap_po.pencilgames.common.game.GameFactory;
 import com.github.shap_po.pencilgames.common.game.GameLobby;
+import com.github.shap_po.pencilgames.common.game.player.PlayerManager;
 import com.github.shap_po.pencilgames.common.network.ConnectionHandler;
 import com.github.shap_po.pencilgames.common.network.packet.Packet;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.game.StartGameS2CPacket;
@@ -16,9 +17,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.UUID;
 
 /**
@@ -29,10 +27,10 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
     public final ConsumerEvent<ServerPlayer> onPlayerConnect = ConsumerEvent.create();
     public final ConsumerEvent<ServerPlayer> onPlayerDisconnect = ConsumerEvent.create();
     public final BiConsumerEvent<ServerPlayer, Packet> onPlayerPacket = BiConsumerEvent.create();
+    private final PlayerManager<ServerPlayer> playerManager = new PlayerManager<>();
 
     private final ServerSocket serverSocket;
 
-    private final LinkedHashMap<UUID, ServerPlayer> players = new LinkedHashMap<>();
     private GameFactory<ServerGameLobby, Game<ServerGameLobby>> gameFactory;
     private Game<ServerGameLobby> currentGame;
 
@@ -44,29 +42,21 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
         serverSocket = new ServerSocket(port);
 
         onPlayerConnect.register((player -> {
-            // add player and check if successful
-            boolean result = addPlayer(player.getId(), player);
-
-            if (!result) {
-                PencilGamesServer.LOGGER.info("Duplication of player id {} detected", player.getId());
-                player.connectionHandler().close();
-                return;
-            }
+            // add player
+            playerManager.addPlayer(player);
+            PencilGamesServer.LOGGER.info("Player list: {}", playerManager.getPlayerOrder());
 
             // sync player's id so they know their own
             player.connectionHandler().sendPacket(new SyncPlayerIdS2CPacket(player.getId()));
 
-            // send the player list to the new player
-            Collection<UUID> playerIds = new LinkedList<>(players.keySet());
             player.connectionHandler()
-                .sendPacket(new SyncPlayerListS2CPacket(playerIds));
+                .sendPacket(new SyncPlayerListS2CPacket(playerManager.getPlayerOrder()));
 
             // notify other players of the new player
             broadcastPacket(new PlayerConnectS2CPacket(player.getId()), player.getId());
-
         }));
         onPlayerDisconnect.register((player -> {
-            players.remove(player.getId());
+            playerManager.removePlayer(player.getId());
             broadcastPacket(new PlayerDisconnectS2CPacket(player.getId()));
         }));
         onPlayerPacket.register((player, packet) -> {
@@ -82,11 +72,6 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
 
     public ServerGameLobby() throws IOException {
         this(null);
-    }
-
-    @Override
-    public LinkedHashMap<UUID, ServerPlayer> getPlayers() {
-        return players;
     }
 
     @Override
@@ -126,19 +111,13 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
         return serverSocket.getLocalPort();
     }
 
-    public void setGameFactory(GameFactory<ServerGameLobby, Game<ServerGameLobby>> gameFactory) {
-        this.gameFactory = gameFactory;
+    @Override
+    public PlayerManager<ServerPlayer> getPlayerManager() {
+        return playerManager;
     }
 
-    /**
-     * Broadcast a packet to all players.
-     *
-     * @param packet the packet
-     */
-    public void broadcastPacket(Packet packet) {
-        for (ServerPlayer player : getPlayers().values()) {
-            player.connectionHandler().sendPacket(packet);
-        }
+    public void setGameFactory(GameFactory<ServerGameLobby, Game<ServerGameLobby>> gameFactory) {
+        this.gameFactory = gameFactory;
     }
 
     /**
@@ -147,8 +126,8 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
      * @param packet the packet
      * @param except the ID of the player to exclude
      */
-    public void broadcastPacket(Packet packet, UUID except) {
-        for (ServerPlayer player : getPlayers().values()) {
+    public void broadcastPacket(Packet packet, @Nullable UUID except) {
+        for (ServerPlayer player : playerManager.getPlayersSet()) {
             if (player.getId().equals(except)) {
                 continue;
             }
@@ -156,14 +135,25 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
         }
     }
 
+    /**
+     * Broadcast a packet to all players.
+     *
+     * @param packet the packet
+     */
+    public void broadcastPacket(Packet packet) {
+        broadcastPacket(packet, null);
+    }
+
     public void startGame() {
         if (currentGame != null) {
             currentGame.end();
         }
 
+        PencilGamesServer.LOGGER.info("Starting game, player list: {}", playerManager.getPlayerOrder());
+
         // Randomize player order
-        shufflePlayers();
-        broadcastPacket(new SyncPlayerOrderS2CPacket(getPlayers().keySet().stream().toList()));
+        playerManager.shufflePlayers();
+        broadcastPacket(new SyncPlayerOrderS2CPacket(playerManager.getPlayerOrder()));
 
         currentGame = gameFactory.apply(this);
         currentGame.start();
