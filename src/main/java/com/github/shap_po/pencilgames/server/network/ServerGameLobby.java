@@ -12,8 +12,8 @@ import com.github.shap_po.pencilgames.common.network.packet.s2c.game.StartGameS2
 import com.github.shap_po.pencilgames.common.network.packet.s2c.player.*;
 import com.github.shap_po.pencilgames.server.PencilGamesServer;
 import com.github.shap_po.pencilgames.server.game.player.ServerPlayer;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;

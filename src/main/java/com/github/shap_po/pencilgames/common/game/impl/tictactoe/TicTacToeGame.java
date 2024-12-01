@@ -3,6 +3,8 @@ package com.github.shap_po.pencilgames.common.game.impl.tictactoe;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.FieldGame;
 import com.github.shap_po.pencilgames.common.util.Identifier;
 import com.github.shap_po.pencilgames.common.util.Pair;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,13 +15,14 @@ public interface TicTacToeGame extends FieldGame<TicTacToeGame.Cell> {
     Identifier GAME_ID = Identifier.of("tictactoe");
     int MIN_PLAYERS = 2;
     int MAX_PLAYERS = Cell.values().length - 1;
+    int WIN_LENGTH = 3;
 
     Pair<Integer, Integer> size = Pair.of(3, 3);
 
     Cell playerToCell(UUID playerId);
 
-    static Map<UUID, Cell> createPlayerToCellMap(List<UUID> players) {
-        Map<UUID, Cell> playerToCellMap = new HashMap<>();
+    static BiMap<UUID, Cell> createPlayerToCellMap(List<UUID> players) {
+        BiMap<UUID, Cell> playerToCellMap = HashBiMap.create(players.size());
 
         for (int i = 0; i < players.size(); i++) {
             playerToCellMap.put(players.get(i), Cell.of(i + 1));

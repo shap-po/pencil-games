@@ -1,6 +1,7 @@
 package com.github.shap_po.pencilgames.common.game;
 
 import com.github.shap_po.pencilgames.common.game.player.Player;
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 
 import java.util.UUID;
 
@@ -24,6 +25,7 @@ public abstract class Game<L extends GameLobby<?>> {
      *
      * @implNote this method must register all packet types and handlers used by the game
      */
+    @OverridingMethodsMustInvokeSuper
     abstract public void onStart();
 
     /**
@@ -31,6 +33,7 @@ public abstract class Game<L extends GameLobby<?>> {
      *
      * @implNote this method must unregister all packet types and handlers used by the game
      */
+    @OverridingMethodsMustInvokeSuper
     abstract public void onEnd();
 
     public void start() {

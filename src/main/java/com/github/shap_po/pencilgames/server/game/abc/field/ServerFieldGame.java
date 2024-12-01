@@ -49,8 +49,8 @@ public abstract class ServerFieldGame<C> extends ServerGame implements FieldGame
             return;
         }
 
-        handleMove(player.getId(), x, y);
         lobby.broadcastPacket(new PlayerMoveS2CPacket(player.getId(), x, y), player.getId());
+        handleMove(player.getId(), x, y);
     }
 
     /**

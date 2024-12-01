@@ -34,6 +34,7 @@ public abstract class ClientFieldGame<C> extends ClientGame implements FieldGame
 
     @Override
     public void onStart() {
+        super.onStart();
         ClientPackets.registerPacketType(PlayerMoveS2CPacket.PACKET_TYPE);
         ClientPackets.registerPacketType(InvalidMoveS2CPacket.PACKET_TYPE);
 
@@ -58,8 +59,9 @@ public abstract class ClientFieldGame<C> extends ClientGame implements FieldGame
 
     @Override
     public void onEnd() {
+        super.onEnd();
         ClientPackets.unregisterPacketType(PlayerMoveS2CPacket.PACKET_TYPE);
-        ClientPackets.registerPacketType(InvalidMoveS2CPacket.PACKET_TYPE);
+        ClientPackets.unregisterPacketType(InvalidMoveS2CPacket.PACKET_TYPE);
     }
 
     /**
