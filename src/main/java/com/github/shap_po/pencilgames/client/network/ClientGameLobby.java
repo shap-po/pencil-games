@@ -30,10 +30,9 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
 
     public final PlayerManager<ClientPlayer> playerManager = new PlayerManager<>();
 
+    private @Nullable Client2ServerConnection connectionHandler;
     private @Nullable UUID localPlayerId; // can be null before syncing with the server
-    private Client2ServerConnection connectionHandler;
-    private Identifier currentGameId;
-    private ClientGame currentGame;
+    private @Nullable ClientGame currentGame;
 
     /**
      * Creates a new game lobby and registers receivers for base packets
@@ -79,11 +78,10 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
 
             if (gameFactory == null) {
                 LOGGER.warn("Server started an unknown game: {}", gameId);
-                connectionHandler.close();
+                disconnect();
                 return;
             }
 
-            currentGameId = gameId;
             currentGame = gameFactory.apply(this);
             currentGame.start();
 
@@ -152,6 +150,10 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
     }
 
     public void sendPacket(Packet packet) {
+        if (!isConnected()) {
+            return;
+        }
+        assert connectionHandler != null;
         connectionHandler.sendPacket(packet);
     }
 
@@ -161,13 +163,13 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
 
     public void disconnect() {
         if (isConnected()) {
+            assert connectionHandler != null;
             connectionHandler.close();
         }
         LOGGER.info("Disconnected from server");
 
         playerManager.clear();
         localPlayerId = null;
-        currentGameId = null;
         currentGame = null;
     }
 }

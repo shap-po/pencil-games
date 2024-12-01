@@ -7,6 +7,7 @@ import com.github.shap_po.pencilgames.common.util.LoggerUtils;
 import com.github.shap_po.pencilgames.server.game.ServerGameFactoryRegistry;
 import com.github.shap_po.pencilgames.server.network.ServerGameLobby;
 import org.apache.commons.cli.*;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -49,7 +50,7 @@ public class PencilGamesServer {
             .type(Integer.class)
             .build());
 
-    public static ServerGameLobby serverGameLobby;
+    public static @Nullable ServerGameLobby serverGameLobby;
 
     public static void main(String[] args) throws IOException {
         Integer port = null;
@@ -76,14 +77,13 @@ public class PencilGamesServer {
         LOGGER.info("Starting server with options: port={}, game={}", port, gameFactory);
 
         serverGameLobby = new ServerGameLobby(port);
-        serverGameLobby.setGameFactory(gameFactory);
 
         serverGameLobby.start();
 
         // start the game when enough players connect
         serverGameLobby.onPlayerConnect.register((player) -> {
             if (pts != null && serverGameLobby.getPlayerManager().getPlayerCount() >= pts) {
-                serverGameLobby.startGame();
+                serverGameLobby.startGame(gameFactory);
             }
         });
     }

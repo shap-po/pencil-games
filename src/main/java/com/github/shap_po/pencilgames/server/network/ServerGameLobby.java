@@ -32,7 +32,6 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
 
     private final ServerSocket serverSocket;
 
-    private GameFactory<ServerGameLobby, Game<ServerGameLobby>> gameFactory;
     private Game<ServerGameLobby> currentGame;
 
     /**
@@ -152,7 +151,7 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
         broadcastPacket(packet, null);
     }
 
-    public void startGame() {
+    public void startGame(GameFactory<ServerGameLobby, Game<ServerGameLobby>> gameFactory) {
         if (currentGame != null) {
             currentGame.end();
         }
@@ -166,10 +165,6 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
         currentGame = gameFactory.apply(this);
         currentGame.start();
         broadcastPacket(new StartGameS2CPacket(gameFactory.getId()));
-    }
-
-    public void setGameFactory(GameFactory<ServerGameLobby, Game<ServerGameLobby>> gameFactory) {
-        this.gameFactory = gameFactory;
     }
 
     public void disconnect() {

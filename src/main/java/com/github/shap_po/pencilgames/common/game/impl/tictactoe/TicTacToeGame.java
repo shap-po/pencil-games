@@ -6,9 +6,7 @@ import com.github.shap_po.pencilgames.common.util.Pair;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public interface TicTacToeGame extends FieldGame<TicTacToeGame.Cell> {

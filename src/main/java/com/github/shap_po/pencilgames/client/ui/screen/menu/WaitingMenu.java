@@ -14,9 +14,12 @@ public class WaitingMenu extends MenuScreen {
     protected void populate() {
         add(new Label("Waiting for the host to start the game..."));
 
-        addButton("Exit lobby", e -> {
-            PencilGamesClient.clientLobby.disconnect();
-            root.back();
-        });
+        addButtonWithConfirm(
+            "Leave lobby",
+            "Are you sure you want to leave the lobby?",
+            e -> {
+                PencilGamesClient.clientLobby.disconnect();
+                root.back();
+            });
     }
 }
