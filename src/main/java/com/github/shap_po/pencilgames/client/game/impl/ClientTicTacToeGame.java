@@ -16,6 +16,9 @@ public class ClientTicTacToeGame extends ClientFieldGame<TicTacToeGame.Cell> imp
     public ClientTicTacToeGame(ClientGameLobby lobby) {
         super(lobby, GameField.of(Cell.EMPTY, TicTacToeGame.size.left(), TicTacToeGame.size.right()));
 
+        this.gameScreen.setChangeHandler(this::screenCellChangeHandler);
+        this.gameScreen.redraw();
+
         List<UUID> players = lobby.getPlayerManager().getPlayerOrder();
         this.playerToCellMap = TicTacToeGame.createPlayerToCellMap(players);
     }
@@ -43,6 +46,13 @@ public class ClientTicTacToeGame extends ClientFieldGame<TicTacToeGame.Cell> imp
 
         Cell c = playerToCell(playerId);
         gameField.set(x, y, c);
+    }
+
+    private void screenCellChangeHandler(int x, int y, Cell cell) {
+        if (cell == null) return;
+
+        gameScreen.getButton(x, y).setText(cell.toString());
+        gameScreen.getButton(x, y).setEnabled(cell == Cell.EMPTY);
     }
 
     public static GameFactory<ClientGameLobby, ClientTicTacToeGame> getFactory() {

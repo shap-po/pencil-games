@@ -1,6 +1,7 @@
 package com.github.shap_po.pencilgames.common.game.impl.abc.field.data;
 
 import com.github.shap_po.pencilgames.common.event.type.ConsumerEvent;
+import org.apache.logging.log4j.util.TriConsumer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,6 +102,14 @@ public class GameField<C> {
 
     public boolean isOnField(int x, int y) {
         return x >= 0 && y >= 0 && x < getWidth() && y < getHeight();
+    }
+
+    public void forEach(TriConsumer<Integer, Integer, C> action) {
+        for (int y = 0; y < getHeight(); y++) {
+            for (int x = 0; x < getWidth(); x++) {
+                action.accept(x, y, get(x, y));
+            }
+        }
     }
 
     public record ChangeEvent<C>(int x, int y, C oldValue, C newValue) {
