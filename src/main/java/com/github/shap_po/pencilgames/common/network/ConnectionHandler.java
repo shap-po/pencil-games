@@ -32,6 +32,13 @@ public class ConnectionHandler extends Thread {
 
     private boolean running;
 
+    /**
+     * Constructor.
+     *
+     * @param socket socket to use
+     * @param side   network side. Used to prevent deadlocks.
+     * @throws IOException if connection fails
+     */
     public ConnectionHandler(Socket socket, NetworkSide side) throws IOException {
         super("ConnectionHandler/" + side + "/" + socket.getInetAddress());
         this.socket = socket;
@@ -50,15 +57,6 @@ public class ConnectionHandler extends Thread {
         running = true;
     }
 
-    public <P extends Packet> void sendPacket(P packet) {
-        try {
-            outputStream.writeObject(packet);
-            outputStream.flush();
-        } catch (IOException e) {
-            LOGGER.error("Failed to send packet {}", e.getMessage());
-        }
-    }
-
     @Override
     public void run() {
         onConnect.run();
@@ -73,6 +71,25 @@ public class ConnectionHandler extends Thread {
         close();
     }
 
+    /**
+     * Sends a packet to the other end of the connection.
+     *
+     * @param packet the packet
+     */
+    public void sendPacket(Packet packet) {
+        try {
+            outputStream.writeObject(packet);
+            outputStream.flush();
+        } catch (IOException e) {
+            LOGGER.error("Failed to send packet {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Receives a packet from the other end of the connection.
+     *
+     * @return the received packet or null if failed
+     */
     private @Nullable Packet receivePacket() {
         Object message;
 
@@ -83,12 +100,12 @@ public class ConnectionHandler extends Thread {
             running = false;
             return null;
         } catch (ClassNotFoundException e) {
-            LOGGER.error("Received malformed packet from {}", socket.getInetAddress());
+            LOGGER.warn("Received malformed packet from {}", socket.getInetAddress());
             return null;
         }
 
         if (!(message instanceof Packet packet)) {
-            LOGGER.error("Received packet of unknown type {} from {}", message.getClass(), socket.getInetAddress());
+            LOGGER.warn("Received packet of unknown type {} from {}", message.getClass(), socket.getInetAddress());
             return null;
         }
 

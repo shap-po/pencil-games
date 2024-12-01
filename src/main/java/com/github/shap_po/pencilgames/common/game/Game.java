@@ -9,7 +9,7 @@ import java.util.UUID;
  */
 public abstract class Game<L extends GameLobby<?>> {
     protected final L lobby;
-    protected int playerTurn = 0;
+    protected int playerTurn = 0; // TODO: handle player disconnect
 
     public Game(L lobby) {
         this.lobby = lobby;

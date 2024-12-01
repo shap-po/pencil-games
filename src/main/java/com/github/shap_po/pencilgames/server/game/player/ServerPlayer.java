@@ -1,6 +1,7 @@
-package com.github.shap_po.pencilgames.server.network;
+package com.github.shap_po.pencilgames.server.game.player;
 
 import com.github.shap_po.pencilgames.common.game.player.Player;
+import com.github.shap_po.pencilgames.server.network.Server2ClientConnection;
 
 import java.util.UUID;
 

@@ -7,17 +7,20 @@ import com.github.shap_po.pencilgames.common.network.packet.PacketType;
 import com.github.shap_po.pencilgames.common.network.packet.c2s.PlayerMessageC2SPacket;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.player.PlayerMessageS2CPacket;
 import com.github.shap_po.pencilgames.server.PencilGamesServer;
+import com.github.shap_po.pencilgames.server.game.player.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.function.BiConsumer;
 
+/**
+ * Packet registry for the server.
+ */
 public class ServerPackets {
     public static final PacketReceiverRegistry<ServerPacketContext> REGISTRY = new PacketReceiverRegistry<>(NetworkSide.SERVER);
 
     static {
+        // Register base C2S packet types
         registerPacketType(PlayerMessageC2SPacket.PACKET_TYPE);
-
-        // TODO: implement actual packet handlers
 
         // Broadcast player messages to all players
         registerReceiver(PlayerMessageC2SPacket.PACKET_TYPE, (packet, context) -> {
@@ -38,6 +41,12 @@ public class ServerPackets {
         REGISTRY.registerReceiver(packetType, handler);
     }
 
+    /**
+     * Context provided to packet handlers on the server side with a packet.
+     *
+     * @param lobby  server lobby
+     * @param player player that sent the packet
+     */
     public record ServerPacketContext(ServerGameLobby lobby, ServerPlayer player) {
     }
 }

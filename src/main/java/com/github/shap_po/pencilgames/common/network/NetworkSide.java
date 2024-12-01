@@ -1,5 +1,9 @@
 package com.github.shap_po.pencilgames.common.network;
 
+/**
+ * Network side an action is performed on.
+ * This allows both identifying {@link com.github.shap_po.pencilgames.common.network.packet.PacketType} and {@link ConnectionHandler} side.
+ */
 public enum NetworkSide {
     SERVER("server"),
     CLIENT("client");

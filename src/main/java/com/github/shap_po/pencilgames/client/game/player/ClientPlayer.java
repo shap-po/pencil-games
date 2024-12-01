@@ -1,4 +1,4 @@
-package com.github.shap_po.pencilgames.client.network;
+package com.github.shap_po.pencilgames.client.game.player;
 
 import com.github.shap_po.pencilgames.common.game.player.Player;
 

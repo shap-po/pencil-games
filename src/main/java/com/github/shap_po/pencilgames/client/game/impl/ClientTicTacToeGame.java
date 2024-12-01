@@ -38,13 +38,11 @@ public class ClientTicTacToeGame extends ClientFieldGame<TicTacToeGame.Cell> imp
     }
 
     @Override
-    public Cell handleMove(UUID playerId, int x, int y) {
+    public void handleMove(UUID playerId, int x, int y) {
         nextPlayer();
 
         Cell c = playerToCell(playerId);
         gameField.set(x, y, c);
-
-        return c;
     }
 
     public static GameFactory<ClientGameLobby, ClientTicTacToeGame> getFactory() {

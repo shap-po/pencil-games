@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
+/**
+ * Represents a game field/board.
+ *
+ * @param <C> cell type
+ */
 public class GameField<C> {
     private final List<List<C>> cells;
     public final ConsumerEvent<ChangeEvent<C>> onChange = new ConsumerEvent<>();
@@ -15,6 +20,15 @@ public class GameField<C> {
         this.cells = cells;
     }
 
+    /**
+     * Create a new game field filled with a value factory.
+     *
+     * @param valueFactory the factory that accepts x and y coordinates
+     * @param width        width
+     * @param height       height
+     * @param <C>          cell type
+     * @return new game field
+     */
     public static <C> GameField<C> of(BiFunction<Integer, Integer, C> valueFactory, int width, int height) {
         List<List<C>> cells = new ArrayList<>(height);
 
@@ -31,10 +45,28 @@ public class GameField<C> {
         return new GameField<>(cells);
     }
 
+    /**
+     * Create a new game field filled with a value supplier.
+     *
+     * @param valueSupplier the supplier
+     * @param width         width
+     * @param height        height
+     * @param <C>           cell type
+     * @return new game field
+     */
     public static <C> GameField<C> of(Supplier<C> valueSupplier, int width, int height) {
         return of((x, y) -> valueSupplier.get(), width, height);
     }
 
+    /**
+     * Create a new game field filled with a default value.
+     *
+     * @param value  default value
+     * @param width  width
+     * @param height height
+     * @param <C>    cell type
+     * @return new game field
+     */
     public static <C> GameField<C> of(C value, int width, int height) {
         return of((x, y) -> value, width, height);
     }

@@ -6,8 +6,8 @@ import com.github.shap_po.pencilgames.common.game.impl.abc.field.data.GameField;
 import com.github.shap_po.pencilgames.common.game.impl.tictactoe.TicTacToeGame;
 import com.github.shap_po.pencilgames.server.PencilGamesServer;
 import com.github.shap_po.pencilgames.server.game.abc.field.ServerFieldGame;
+import com.github.shap_po.pencilgames.server.game.player.ServerPlayer;
 import com.github.shap_po.pencilgames.server.network.ServerGameLobby;
-import com.github.shap_po.pencilgames.server.network.ServerPlayer;
 
 import java.util.List;
 import java.util.Map;
@@ -48,7 +48,7 @@ public class ServerTicTacToeGame extends ServerFieldGame<TicTacToeGame.Cell> imp
     }
 
     @Override
-    public Cell handleMove(UUID playerId, int x, int y) {
+    public void handleMove(UUID playerId, int x, int y) {
         nextPlayer();
 
         Cell c = playerToCell(playerId);
@@ -56,8 +56,6 @@ public class ServerTicTacToeGame extends ServerFieldGame<TicTacToeGame.Cell> imp
         PencilGamesServer.LOGGER.debug("Player {} moved to ({}, {}) with cell {}", playerId, x, y, c);
 
         gameField.set(x, y, c);
-
-        return c;
     }
 
     public static GameFactory<ServerGameLobby, Game<ServerGameLobby>> getFactory() {

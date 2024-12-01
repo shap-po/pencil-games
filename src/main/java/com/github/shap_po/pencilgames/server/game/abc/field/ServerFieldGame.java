@@ -1,17 +1,17 @@
 package com.github.shap_po.pencilgames.server.game.abc.field;
 
-import com.github.shap_po.pencilgames.common.game.Game;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.FieldGame;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.data.GameField;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.packet.c2s.PlayerMoveC2SPacket;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.packet.s2c.InvalidMoveS2CPacket;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.packet.s2c.PlayerMoveS2CPacket;
 import com.github.shap_po.pencilgames.server.PencilGamesServer;
+import com.github.shap_po.pencilgames.server.game.ServerGame;
+import com.github.shap_po.pencilgames.server.game.player.ServerPlayer;
 import com.github.shap_po.pencilgames.server.network.ServerGameLobby;
 import com.github.shap_po.pencilgames.server.network.ServerPackets;
-import com.github.shap_po.pencilgames.server.network.ServerPlayer;
 
-public abstract class ServerFieldGame<C> extends Game<ServerGameLobby> implements FieldGame<C> {
+public abstract class ServerFieldGame<C> extends ServerGame implements FieldGame<C> {
     protected final GameField<C> gameField;
 
     public ServerFieldGame(ServerGameLobby lobby, GameField<C> gameField) {
@@ -30,6 +30,12 @@ public abstract class ServerFieldGame<C> extends Game<ServerGameLobby> implement
         ServerPackets.unregisterPacketType(PlayerMoveC2SPacket.PACKET_TYPE);
     }
 
+    /**
+     * Handles a player move packet.
+     *
+     * @param packet  packet
+     * @param context context
+     */
     private void onPlayerMove(PlayerMoveC2SPacket packet, ServerPackets.ServerPacketContext context) {
         PencilGamesServer.LOGGER.debug("Player {} moved to ({}, {})", context.player().getId(), packet.x(), packet.y());
 

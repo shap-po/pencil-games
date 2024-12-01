@@ -1,10 +1,10 @@
 package com.github.shap_po.pencilgames.common.registry;
 
-import com.google.common.collect.ImmutableBiMap;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,16 +38,16 @@ public class SimpleRegistry<K, V> implements Registry<K, V> {
 
     @Override
     public Set<K> getKeys() {
-        return registry.keySet();
+        return new HashSet<>(registry.keySet());
     }
 
     @Override
-    public Set<Map.Entry<K, V>> getEntries() {
-        return registry.entrySet();
+    public Set<V> getValues() {
+        return new HashSet<>(registry.values());
     }
 
     @Override
-    public ImmutableBiMap<K, V> getMap() {
-        return ImmutableBiMap.copyOf(registry);
+    public Map<K, V> getMap() {
+        return new HashMap<>(registry);
     }
 }

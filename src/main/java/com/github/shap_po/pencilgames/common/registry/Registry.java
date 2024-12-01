@@ -1,6 +1,5 @@
 package com.github.shap_po.pencilgames.common.registry;
 
-import com.google.common.collect.ImmutableBiMap;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,7 +9,7 @@ import java.util.Set;
 
 /**
  * Base Registry interface.
- * Registries are used to store objects with unique ids
+ * Registries are used to store objects with unique ids.
  *
  * @param <K> key type
  * @param <V> value type
@@ -33,7 +32,7 @@ public interface Registry<K, V> {
 
     Set<K> getKeys();
 
-    Set<Map.Entry<K, V>> getEntries();
+    Set<V> getValues();
 
-    ImmutableBiMap<K, V> getMap();
+    Map<K, V> getMap();
 }

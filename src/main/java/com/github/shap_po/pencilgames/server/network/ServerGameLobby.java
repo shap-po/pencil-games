@@ -11,6 +11,7 @@ import com.github.shap_po.pencilgames.common.network.packet.Packet;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.game.StartGameS2CPacket;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.player.*;
 import com.github.shap_po.pencilgames.server.PencilGamesServer;
+import com.github.shap_po.pencilgames.server.game.player.ServerPlayer;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -34,6 +35,12 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
     private GameFactory<ServerGameLobby, Game<ServerGameLobby>> gameFactory;
     private Game<ServerGameLobby> currentGame;
 
+    /**
+     * Constructor for the server game lobby.
+     *
+     * @param port port to listen on. If null, defaults to {@link ConnectionHandler#DEFAULT_PORT}
+     * @throws IOException if an error occurs. Most of the time, this means the port is already in use
+     */
     public ServerGameLobby(@Nullable Integer port) throws IOException {
         super("ServerGameLobby");
 
@@ -70,6 +77,11 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
         PencilGamesServer.LOGGER.info("Server started on port {}", port);
     }
 
+    /**
+     * Constructor for the server game lobby. Uses the default port.
+     *
+     * @throws IOException if an error occurs
+     */
     public ServerGameLobby() throws IOException {
         this(null);
     }
@@ -116,10 +128,6 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
         return playerManager;
     }
 
-    public void setGameFactory(GameFactory<ServerGameLobby, Game<ServerGameLobby>> gameFactory) {
-        this.gameFactory = gameFactory;
-    }
-
     /**
      * Broadcast a packet to all players except the specified one.
      *
@@ -158,6 +166,10 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
         currentGame = gameFactory.apply(this);
         currentGame.start();
         broadcastPacket(new StartGameS2CPacket(gameFactory.getId()));
+    }
+
+    public void setGameFactory(GameFactory<ServerGameLobby, Game<ServerGameLobby>> gameFactory) {
+        this.gameFactory = gameFactory;
     }
 
     public void disconnect() {

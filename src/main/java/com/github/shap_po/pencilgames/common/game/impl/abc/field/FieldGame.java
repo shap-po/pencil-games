@@ -7,5 +7,5 @@ import java.util.UUID;
 public interface FieldGame<C> {
     GameField<C> getGameField();
 
-    C handleMove(UUID playerID, int x, int y);
+    void handleMove(UUID playerID, int x, int y);
 }

@@ -3,6 +3,7 @@ package com.github.shap_po.pencilgames.client.network;
 import com.github.shap_po.pencilgames.client.PencilGamesClient;
 import com.github.shap_po.pencilgames.client.game.ClientGame;
 import com.github.shap_po.pencilgames.client.game.ClientGameFactoryRegistry;
+import com.github.shap_po.pencilgames.client.game.player.ClientPlayer;
 import com.github.shap_po.pencilgames.common.game.GameFactory;
 import com.github.shap_po.pencilgames.common.game.GameLobby;
 import com.github.shap_po.pencilgames.common.game.player.PlayerManager;
