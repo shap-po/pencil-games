@@ -28,6 +28,7 @@ public class GameWindow extends JFrame {
         menus.put(ScreenState.HOST_MENU, new HostMenu(this));
         menus.put(ScreenState.SETTINGS_MENU, new SettingsMenu(this));
         menus.put(ScreenState.START_GAME_MENU, new StartGameMenu(this));
+        menus.put(ScreenState.WAITING_MENU, new WaitingMenu(this));
 
         setContentPane(contentPanel);
 
@@ -117,7 +118,7 @@ public class GameWindow extends JFrame {
     }
 
     public void setGameScreen(GameScreen<?> gameScreen) {
-        setContentState(ScreenState.GAME_SCREEN, gameScreen, false);
+        setContentState(ScreenState.GAME_SCREEN, gameScreen, true);
     }
 
     /**
@@ -142,6 +143,7 @@ public class GameWindow extends JFrame {
         HOST_MENU,
         SETTINGS_MENU,
         START_GAME_MENU,
+        WAITING_MENU,
         GAME_SCREEN;
     }
 }

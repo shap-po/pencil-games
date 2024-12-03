@@ -4,6 +4,7 @@ import com.github.shap_po.pencilgames.client.PencilGamesClient;
 import com.github.shap_po.pencilgames.client.game.ClientGame;
 import com.github.shap_po.pencilgames.client.game.ClientGameFactoryRegistry;
 import com.github.shap_po.pencilgames.client.game.player.ClientPlayer;
+import com.github.shap_po.pencilgames.common.event.type.RunnableEvent;
 import com.github.shap_po.pencilgames.common.game.GameFactory;
 import com.github.shap_po.pencilgames.common.game.GameLobby;
 import com.github.shap_po.pencilgames.common.game.player.PlayerManager;
@@ -29,6 +30,8 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
     public static final Logger LOGGER = LoggerUtils.getLogger();
 
     public final PlayerManager<ClientPlayer> playerManager = new PlayerManager<>();
+    public final RunnableEvent onConnect = RunnableEvent.create();
+    public final RunnableEvent onDisconnect = RunnableEvent.create();
 
     private @Nullable Client2ServerConnection connectionHandler;
     private @Nullable UUID localPlayerId; // can be null before syncing with the server
@@ -121,7 +124,9 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
         connectionHandler.onDisconnect.register(() -> {
             connectionHandler = null;
             disconnect();
+            onDisconnect.run();
         });
+        connectionHandler.onConnect.register(onConnect);
 
         // start the connection
         connectionHandler.start();

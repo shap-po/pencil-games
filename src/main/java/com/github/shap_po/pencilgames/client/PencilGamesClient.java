@@ -47,6 +47,11 @@ public class PencilGamesClient {
 
     public static void main(String[] args) {
         clientLobby.start();
+        clientLobby.onConnect.register(() -> {
+            if (!isHost()) {
+                gameWindow.setContentState(GameWindow.ScreenState.WAITING_MENU);
+            }
+        });
 
         parseArgs(args);
 
@@ -121,5 +126,9 @@ public class PencilGamesClient {
             LOGGER.error("Failed to parse command line arguments: {}", e.getMessage());
             exit(1);
         }
+    }
+
+    public static boolean isHost() {
+        return PencilGamesServer.serverGameLobby != null;
     }
 }

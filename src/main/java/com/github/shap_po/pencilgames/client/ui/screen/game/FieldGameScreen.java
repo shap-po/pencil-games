@@ -56,6 +56,10 @@ public class FieldGameScreen<C> extends GameScreen<ClientFieldGame<C>> {
         add(panel);
     }
 
+    public void setChangeHandler(TriConsumer<Integer, Integer, @Nullable C> changeHandler) {
+        this.changeHandler = changeHandler;
+    }
+
     /**
      * Updates the buttons to match the current state of the game field.
      * This method should be called by game after the screen is initialized and the {@link #changeHandler} is set.
@@ -68,11 +72,17 @@ public class FieldGameScreen<C> extends GameScreen<ClientFieldGame<C>> {
         });
     }
 
-    public void setChangeHandler(TriConsumer<Integer, Integer, @Nullable C> changeHandler) {
-        this.changeHandler = changeHandler;
-    }
-
     public JButton getButton(int x, int y) {
         return buttons.get(y).get(x);
+    }
+
+    /**
+     * Prevent interactions with the game field.
+     * This method should only be called after the game is ended.
+     */
+    public void disableInteractions() {
+        game.getGameField().forEach((x, y, c) -> {
+            buttons.get(y).get(x).setEnabled(false);
+        });
     }
 }

@@ -14,9 +14,19 @@ public abstract class GameScreen<G extends Game<ClientGameLobby>> extends Conten
         // most game screens depend on the game, so set it before populating
         this.game = game;
         populate();
+
+        addLeaveButton();
     }
 
     public G getGame() {
         return game;
+    }
+
+    protected void addLeaveButton() {
+        addButtonWithConfirm(
+            "Leave Game",
+            "Are you sure you want to leave the game?",
+            e -> root.back()
+        );
     }
 }

@@ -12,6 +12,7 @@ import com.github.shap_po.pencilgames.common.game.impl.abc.field.data.GameField;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.packet.c2s.PlayerMoveC2SPacket;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.packet.s2c.InvalidMoveS2CPacket;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.packet.s2c.PlayerMoveS2CPacket;
+import com.github.shap_po.pencilgames.common.network.packet.s2c.game.EndGameS2CPacket;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -54,6 +55,9 @@ public abstract class ClientFieldGame<C> extends ClientGame implements FieldGame
             C lastState = (C) packet.lastState();
 
             gameField.set(x, y, lastState);
+        });
+        ClientPackets.registerReceiver(EndGameS2CPacket.PACKET_TYPE, (packet, context) -> {
+            gameScreen.disableInteractions();
         });
     }
 
