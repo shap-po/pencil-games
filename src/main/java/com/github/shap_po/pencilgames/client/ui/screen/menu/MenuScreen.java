@@ -1,18 +1,18 @@
 package com.github.shap_po.pencilgames.client.ui.screen.menu;
 
-import com.github.shap_po.pencilgames.client.ui.GameWindow;
+import com.github.shap_po.pencilgames.client.ui.Application;
 import com.github.shap_po.pencilgames.client.ui.util.ContentPanel;
 
 public abstract class MenuScreen extends ContentPanel {
-    public MenuScreen(GameWindow root, boolean addBackButton) {
+    public MenuScreen(Application root, boolean addBackButton) {
         super(root);
 
         if (addBackButton) {
-            addBackButton();
+            addMainMenuButton();
         }
     }
 
-    public MenuScreen(GameWindow root) {
+    public MenuScreen(Application root) {
         this(root, true);
     }
 }

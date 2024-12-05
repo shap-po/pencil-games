@@ -1,7 +1,7 @@
 package com.github.shap_po.pencilgames.client.ui.screen.menu;
 
 import com.github.shap_po.pencilgames.client.PencilGamesClient;
-import com.github.shap_po.pencilgames.client.ui.GameWindow;
+import com.github.shap_po.pencilgames.client.ui.Application;
 import com.github.shap_po.pencilgames.client.ui.util.NumberField;
 import com.github.shap_po.pencilgames.common.network.ConnectionHandler;
 import com.github.shap_po.pencilgames.server.PencilGamesServer;
@@ -11,7 +11,7 @@ import javax.swing.*;
 import java.io.IOException;
 
 public class HostMenu extends MenuScreen {
-    public HostMenu(GameWindow root) {
+    public HostMenu(Application root) {
         super(root);
     }
 
@@ -34,10 +34,10 @@ public class HostMenu extends MenuScreen {
                 PencilGamesServer.LOGGER.error("Failed to create server", ex);
                 return;
             }
-            root.setContentState(GameWindow.ScreenState.START_GAME_MENU);
+            root.setContentState(Application.ScreenState.START_GAME_MENU);
 
             try {
-                PencilGamesClient.clientLobby.connect("localhost");
+                PencilGamesClient.CLIENT_LOBBY.connect("localhost");
             } catch (IOException ex) {
                 PencilGamesClient.LOGGER.error("Failed to connect to server", ex);
                 PencilGamesServer.serverGameLobby.disconnect();

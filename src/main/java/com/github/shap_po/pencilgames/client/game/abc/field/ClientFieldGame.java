@@ -4,7 +4,7 @@ import com.github.shap_po.pencilgames.client.PencilGamesClient;
 import com.github.shap_po.pencilgames.client.game.ClientGame;
 import com.github.shap_po.pencilgames.client.network.ClientGameLobby;
 import com.github.shap_po.pencilgames.client.network.ClientPackets;
-import com.github.shap_po.pencilgames.client.ui.GameWindow;
+import com.github.shap_po.pencilgames.client.ui.Application;
 import com.github.shap_po.pencilgames.client.ui.screen.game.FieldGameScreen;
 import com.github.shap_po.pencilgames.client.ui.screen.game.GameScreen;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.FieldGame;
@@ -25,7 +25,7 @@ public abstract class ClientFieldGame<C> extends ClientGame implements FieldGame
         super(lobby);
 
         this.gameField = gameField;
-        this.gameScreen = new FieldGameScreen<>(PencilGamesClient.gameWindow, this);
+        this.gameScreen = new FieldGameScreen<>(PencilGamesClient.APPLICATION, this);
     }
 
     @Override
@@ -104,7 +104,7 @@ public abstract class ClientFieldGame<C> extends ClientGame implements FieldGame
     }
 
     @Override
-    public GameScreen<ClientFieldGame<C>> getGameScreen(GameWindow root) {
+    public GameScreen<ClientFieldGame<C>> getGameScreen(Application root) {
         return gameScreen;
     }
 }

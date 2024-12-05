@@ -1,6 +1,6 @@
 package com.github.shap_po.pencilgames.client.ui.screen.menu;
 
-import com.github.shap_po.pencilgames.client.ui.GameWindow;
+import com.github.shap_po.pencilgames.client.ui.Application;
 import com.github.shap_po.pencilgames.common.game.Game;
 import com.github.shap_po.pencilgames.common.game.GameFactory;
 import com.github.shap_po.pencilgames.common.util.Identifier;
@@ -12,7 +12,7 @@ import javax.swing.*;
 import java.util.Objects;
 
 public class StartGameMenu extends MenuScreen {
-    public StartGameMenu(GameWindow root) {
+    public StartGameMenu(Application root) {
         super(root, false);
     }
 
@@ -41,7 +41,6 @@ public class StartGameMenu extends MenuScreen {
             e -> {
                 Objects.requireNonNull(PencilGamesServer.serverGameLobby, "Server lobby is not created.");
                 PencilGamesServer.serverGameLobby.disconnect();
-                root.back();
             }
         );
     }

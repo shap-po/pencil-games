@@ -69,7 +69,7 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
             try {
                 ServerPackets.REGISTRY.receive(packet, new ServerPackets.ServerPacketContext(this, player));
             } catch (IllegalArgumentException e) {
-                PencilGamesServer.LOGGER.error("Failed to receive packet", e);
+                PencilGamesServer.LOGGER.error("Failed to receive packet: {}", e.getMessage());
             }
         });
 
@@ -167,7 +167,14 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
         broadcastPacket(new StartGameS2CPacket(gameFactory.getId()));
     }
 
+    public void endGame() {
+        if (currentGame != null) {
+            currentGame.end();
+        }
+    }
+
     public void disconnect() {
+        // close the socket
         try {
             serverSocket.close();
         } catch (IOException e) {
@@ -175,5 +182,13 @@ public class ServerGameLobby extends Thread implements GameLobby<ServerPlayer> {
         } finally {
             this.interrupt();
         }
+
+        // clear event handlers to ignore future events
+        onPlayerConnect.clear();
+        onPlayerDisconnect.clear();
+        onPlayerPacket.clear();
+
+        // close all active connections
+        playerManager.getPlayersSet().stream().map(ServerPlayer::connectionHandler).forEach(ConnectionHandler::close);
     }
 }

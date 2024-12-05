@@ -1,7 +1,7 @@
 package com.github.shap_po.pencilgames.client.ui.screen.game;
 
 import com.github.shap_po.pencilgames.client.game.abc.field.ClientFieldGame;
-import com.github.shap_po.pencilgames.client.ui.GameWindow;
+import com.github.shap_po.pencilgames.client.ui.Application;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,7 +13,7 @@ public class FieldGameScreen<C> extends GameScreen<ClientFieldGame<C>> {
     private List<List<JButton>> buttons;
     private TriConsumer<Integer, Integer, C> changeHandler = (x, y, c) -> {};
 
-    public FieldGameScreen(GameWindow root, ClientFieldGame<C> game) {
+    public FieldGameScreen(Application root, ClientFieldGame<C> game) {
         super(root, game);
     }
 

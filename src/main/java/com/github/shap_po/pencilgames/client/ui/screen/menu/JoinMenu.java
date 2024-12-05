@@ -1,7 +1,7 @@
 package com.github.shap_po.pencilgames.client.ui.screen.menu;
 
 import com.github.shap_po.pencilgames.client.PencilGamesClient;
-import com.github.shap_po.pencilgames.client.ui.GameWindow;
+import com.github.shap_po.pencilgames.client.ui.Application;
 import com.github.shap_po.pencilgames.client.ui.util.NumberField;
 import com.github.shap_po.pencilgames.common.network.ConnectionHandler;
 
@@ -9,7 +9,7 @@ import javax.swing.*;
 import java.io.IOException;
 
 public class JoinMenu extends MenuScreen {
-    public JoinMenu(GameWindow root) {
+    public JoinMenu(Application root) {
         super(root);
     }
 
@@ -28,7 +28,7 @@ public class JoinMenu extends MenuScreen {
             int port = portField.getValue();
 
             try {
-                PencilGamesClient.clientLobby.connect(ip, port);
+                PencilGamesClient.CLIENT_LOBBY.connect(ip, port);
             } catch (IOException ex) {
                 PencilGamesClient.LOGGER.error("Failed to connect to server: {}", ex.getMessage());
             }

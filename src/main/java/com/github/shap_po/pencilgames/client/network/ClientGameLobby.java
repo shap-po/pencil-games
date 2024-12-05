@@ -89,7 +89,7 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
             currentGame.start();
 
             LOGGER.info("Server started game: {}", gameId);
-            PencilGamesClient.gameWindow.setGameScreen(currentGame.getGameScreen(PencilGamesClient.gameWindow));
+            PencilGamesClient.APPLICATION.setGameScreen(currentGame.getGameScreen(PencilGamesClient.APPLICATION));
         });
     }
 
@@ -118,7 +118,7 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
             try {
                 ClientPackets.REGISTRY.receive(packet, new ClientPackets.ClientPacketContext(this));
             } catch (IllegalArgumentException e) {
-                LOGGER.error("Failed to receive packet", e);
+                LOGGER.error("Failed to receive packet: {}", e.getMessage());
             }
         });
         connectionHandler.onDisconnect.register(() -> {
@@ -175,6 +175,9 @@ public class ClientGameLobby extends Thread implements GameLobby<ClientPlayer> {
 
         playerManager.clear();
         localPlayerId = null;
+        if (currentGame != null) {
+            currentGame.end();
+        }
         currentGame = null;
     }
 }

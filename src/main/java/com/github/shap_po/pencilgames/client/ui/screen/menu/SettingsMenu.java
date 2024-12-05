@@ -1,9 +1,9 @@
 package com.github.shap_po.pencilgames.client.ui.screen.menu;
 
-import com.github.shap_po.pencilgames.client.ui.GameWindow;
+import com.github.shap_po.pencilgames.client.ui.Application;
 
 public class SettingsMenu extends MenuScreen {
-    public SettingsMenu(GameWindow root) {
+    public SettingsMenu(Application root) {
         super(root);
     }
 

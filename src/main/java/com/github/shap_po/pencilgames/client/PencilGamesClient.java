@@ -1,7 +1,7 @@
 package com.github.shap_po.pencilgames.client;
 
 import com.github.shap_po.pencilgames.client.network.ClientGameLobby;
-import com.github.shap_po.pencilgames.client.ui.GameWindow;
+import com.github.shap_po.pencilgames.client.ui.Application;
 import com.github.shap_po.pencilgames.common.game.Game;
 import com.github.shap_po.pencilgames.common.game.GameFactory;
 import com.github.shap_po.pencilgames.common.util.LoggerUtils;
@@ -19,8 +19,8 @@ import static java.lang.System.exit;
  */
 public class PencilGamesClient {
     public static final Logger LOGGER = LoggerUtils.getLogger();
-    public static final GameWindow gameWindow = new GameWindow();
-    public static final ClientGameLobby clientLobby = new ClientGameLobby();
+    public static final Application APPLICATION = new Application();
+    public static final ClientGameLobby CLIENT_LOBBY = new ClientGameLobby();
 
     public static final Options CLI_OPTIONS = new Options()
         .addOption(Option.builder("h")
@@ -46,16 +46,17 @@ public class PencilGamesClient {
         .addOptions(PencilGamesServer.CLI_OPTIONS);
 
     public static void main(String[] args) {
-        clientLobby.start();
-        clientLobby.onConnect.register(() -> {
+        CLIENT_LOBBY.start();
+        CLIENT_LOBBY.onConnect.register(() -> {
             if (!isHost()) {
-                gameWindow.setContentState(GameWindow.ScreenState.WAITING_MENU);
+                APPLICATION.setContentState(Application.ScreenState.WAITING_MENU);
             }
         });
+        CLIENT_LOBBY.onDisconnect.register(APPLICATION::setMainMenu);
 
         parseArgs(args);
 
-        gameWindow.setVisible(true);
+        APPLICATION.setVisible(true);
         LOGGER.info("Started client");
     }
 
@@ -71,7 +72,7 @@ public class PencilGamesClient {
 
             String title = line.getParsedOptionValue("t");
             if (title != null) {
-                gameWindow.setTitle(title);
+                APPLICATION.setTitle(title);
             }
 
             Integer port = line.getParsedOptionValue("p");
@@ -91,7 +92,7 @@ public class PencilGamesClient {
                         LOGGER.error("Failed to start server with command line arguments: {}", e.getMessage());
                     }
 
-                    gameWindow.setContentState(GameWindow.ScreenState.START_GAME_MENU);
+                    APPLICATION.setContentState(Application.ScreenState.START_GAME_MENU);
                     shouldConnect = true; // auto-connect to the server
                 }
             }
@@ -101,9 +102,9 @@ public class PencilGamesClient {
             if (shouldConnect) {
                 if (force) {
                     // knock on the door until it is open
-                    while (!clientLobby.isConnected()) {
+                    while (!CLIENT_LOBBY.isConnected()) {
                         try {
-                            clientLobby.connect("localhost", port);
+                            CLIENT_LOBBY.connect("localhost", port);
                         } catch (IOException e) {
                             LOGGER.error("Failed to connect to server. Retrying...");
                             try {
@@ -115,7 +116,7 @@ public class PencilGamesClient {
                     }
                 } else {
                     try {
-                        clientLobby.connect("localhost", port);
+                        CLIENT_LOBBY.connect("localhost", port);
                     } catch (IOException e) {
                         LOGGER.error("Failed to connect to server with command line arguments: {}", e.getMessage());
                     }

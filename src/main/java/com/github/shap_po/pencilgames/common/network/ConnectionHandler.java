@@ -81,7 +81,7 @@ public class ConnectionHandler extends Thread {
             outputStream.writeObject(packet);
             outputStream.flush();
         } catch (IOException e) {
-            LOGGER.error("Failed to send packet {}", e.getMessage());
+            LOGGER.error("Failed to send packet {}: {}", packet.getType(), e.getMessage());
         }
     }
 

@@ -1,12 +1,12 @@
 package com.github.shap_po.pencilgames.client.ui.util;
 
-import com.github.shap_po.pencilgames.client.ui.GameWindow;
+import com.github.shap_po.pencilgames.client.ui.Application;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
 
 public abstract class ContentPanel extends JPanel {
-    protected final GameWindow root;
+    protected final Application root;
 
     /**
      * Creates a new ContentPanel
@@ -15,7 +15,7 @@ public abstract class ContentPanel extends JPanel {
      * @param doPopulate whether to populate the panel on creation.
      *                   Sometimes, some variables need to be set before populating
      */
-    public ContentPanel(GameWindow root, boolean doPopulate) {
+    public ContentPanel(Application root, boolean doPopulate) {
         super(false);
         this.root = root;
 
@@ -35,7 +35,7 @@ public abstract class ContentPanel extends JPanel {
      *
      * @param root root window
      */
-    public ContentPanel(GameWindow root) {
+    public ContentPanel(Application root) {
         this(root, true);
     }
 
@@ -58,8 +58,8 @@ public abstract class ContentPanel extends JPanel {
         add(button);
     }
 
-    protected void addBackButton() {
-        addButton("Back", e -> root.back());
+    protected void addMainMenuButton() {
+        addButton("Back", e -> root.setMainMenu());
     }
 
     abstract protected void populate();

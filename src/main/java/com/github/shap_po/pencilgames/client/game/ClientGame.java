@@ -3,7 +3,7 @@ package com.github.shap_po.pencilgames.client.game;
 import com.github.shap_po.pencilgames.client.PencilGamesClient;
 import com.github.shap_po.pencilgames.client.network.ClientGameLobby;
 import com.github.shap_po.pencilgames.client.network.ClientPackets;
-import com.github.shap_po.pencilgames.client.ui.GameWindow;
+import com.github.shap_po.pencilgames.client.ui.Application;
 import com.github.shap_po.pencilgames.client.ui.screen.game.GameScreen;
 import com.github.shap_po.pencilgames.common.game.Game;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.game.EndGameS2CPacket;
@@ -13,7 +13,7 @@ public abstract class ClientGame extends Game<ClientGameLobby> {
         super(lobby);
     }
 
-    abstract public GameScreen<?> getGameScreen(GameWindow root);
+    abstract public GameScreen<?> getGameScreen(Application root);
 
     @Override
     public void onStart() {

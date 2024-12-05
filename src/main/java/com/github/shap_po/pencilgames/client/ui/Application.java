@@ -7,16 +7,13 @@ import com.github.shap_po.pencilgames.client.ui.util.ContentPanel;
 
 import javax.swing.*;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
-public class GameWindow extends JFrame {
-    private final List<ScreenState> stateHistory = new Stack<>();
+public class Application extends JFrame {
     private final Map<ScreenState, ContentPanel> menus = new HashMap<>();
     private final JPanel contentPanel = new JPanel();
 
-    public GameWindow() {
+    public Application() {
         super();
         setTitle("Pencil Games");
         setSize(800, 600);
@@ -32,20 +29,7 @@ public class GameWindow extends JFrame {
 
         setContentPane(contentPanel);
 
-        updateContent();
-    }
-
-    /**
-     * Get the current state of the window from the history stack.
-     * If the stack is empty, the main menu will be returned.
-     *
-     * @return current state
-     */
-    public ScreenState getMenuState() {
-        if (stateHistory.isEmpty()) {
-            stateHistory.add(ScreenState.MAIN_MENU);
-        }
-        return stateHistory.getLast();
+        setMainMenu();
     }
 
     /**
@@ -66,14 +50,9 @@ public class GameWindow extends JFrame {
      *
      * @param state        new state
      * @param contentPanel new content
-     * @param pushHistory  whether to add the new state to the history stack
      * @return true if the state was successfully set
      */
-    public boolean setContentState(ScreenState state, ContentPanel contentPanel, boolean pushHistory) {
-        if (pushHistory) {
-            this.stateHistory.add(state);
-        }
-
+    public boolean setContentState(ScreenState state, ContentPanel contentPanel) {
         setContent(contentPanel);
 
         return true;
@@ -83,58 +62,24 @@ public class GameWindow extends JFrame {
      * Sets the state of the window.
      * Content of the window will be set to the corresponding menu panel from {@link #menus} if present.
      *
-     * @param state       new state
-     * @param pushHistory whether to add the new state to the history stack
+     * @param state new state
      * @return true if the state was successfully set
      */
-    public boolean setContentState(ScreenState state, boolean pushHistory) {
+    public boolean setContentState(ScreenState state) {
         if (!menus.containsKey(state)) {
             PencilGamesClient.LOGGER.warn("Unknown menu state: {}", state);
             return false;
         }
 
-        return setContentState(state, menus.get(state), pushHistory);
-    }
-
-    /**
-     * Sets the state of the window.
-     * Content of the window will be set to the corresponding menu panel from {@link #menus} if present.
-     * The state will be pushed to the history stack.
-     *
-     * @param state new state
-     * @return true if the state was successfully set
-     */
-    public boolean setContentState(ScreenState state) {
-        return setContentState(state, true);
-    }
-
-    /**
-     * Updates the content of the window to match the current state.
-     *
-     * @return true if the content was successfully updated
-     */
-    private boolean updateContent() {
-        return setContentState(getMenuState(), false);
+        return setContentState(state, menus.get(state));
     }
 
     public void setGameScreen(GameScreen<?> gameScreen) {
-        setContentState(ScreenState.GAME_SCREEN, gameScreen, true);
+        setContentState(ScreenState.GAME_SCREEN, gameScreen);
     }
 
-    /**
-     * Go back in the state history and update the window content.
-     */
-    public void back() {
-        if (stateHistory.isEmpty()) {
-            return;
-        }
-
-        // some states (like the game screen) can't be re-created, skip them
-        boolean result = false;
-        while (!result) {
-            stateHistory.removeLast();
-            result = updateContent();
-        }
+    public void setMainMenu() {
+        setContentState(ScreenState.MAIN_MENU);
     }
 
     public enum ScreenState {
