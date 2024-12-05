@@ -1,6 +1,6 @@
 package com.github.shap_po.pencilgames.client.ui.screen.game;
 
-import com.github.shap_po.pencilgames.client.game.abc.field.ClientFieldGame;
+import com.github.shap_po.pencilgames.client.game.impl.abc.field.ClientFieldGame;
 import com.github.shap_po.pencilgames.client.ui.Application;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.Nullable;

@@ -1,6 +1,6 @@
 package com.github.shap_po.pencilgames.client.game;
 
-import com.github.shap_po.pencilgames.client.game.impl.ClientTicTacToeGame;
+import com.github.shap_po.pencilgames.client.game.impl.tictactoe.ClientTicTacToeGame;
 import com.github.shap_po.pencilgames.client.network.ClientGameLobby;
 import com.github.shap_po.pencilgames.common.game.GameFactory;
 import com.github.shap_po.pencilgames.common.registry.SimpleRegistry;

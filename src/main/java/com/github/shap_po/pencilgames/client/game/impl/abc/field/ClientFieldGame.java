@@ -1,4 +1,4 @@
-package com.github.shap_po.pencilgames.client.game.abc.field;
+package com.github.shap_po.pencilgames.client.game.impl.abc.field;
 
 import com.github.shap_po.pencilgames.client.PencilGamesClient;
 import com.github.shap_po.pencilgames.client.game.ClientGame;

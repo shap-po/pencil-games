@@ -4,7 +4,7 @@ import com.github.shap_po.pencilgames.common.game.Game;
 import com.github.shap_po.pencilgames.common.game.GameFactory;
 import com.github.shap_po.pencilgames.common.registry.SimpleRegistry;
 import com.github.shap_po.pencilgames.common.util.Identifier;
-import com.github.shap_po.pencilgames.server.game.impl.ServerTicTacToeGame;
+import com.github.shap_po.pencilgames.server.game.impl.tictactoe.ServerTicTacToeGame;
 import com.github.shap_po.pencilgames.server.network.ServerGameLobby;
 
 /**

@@ -1,63 +1,25 @@
-package com.github.shap_po.pencilgames.server.game.impl;
+package com.github.shap_po.pencilgames.server.game.impl.tictactoe;
 
 import com.github.shap_po.pencilgames.common.game.Game;
 import com.github.shap_po.pencilgames.common.game.GameFactory;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.data.GameField;
 import com.github.shap_po.pencilgames.common.game.impl.tictactoe.TicTacToeGame;
 import com.github.shap_po.pencilgames.server.PencilGamesServer;
-import com.github.shap_po.pencilgames.server.game.abc.field.ServerFieldGame;
-import com.github.shap_po.pencilgames.server.game.player.ServerPlayer;
+import com.github.shap_po.pencilgames.server.game.impl.abc.field.ServerPlayerToCellFieldGame;
 import com.github.shap_po.pencilgames.server.network.ServerGameLobby;
-import com.google.common.collect.BiMap;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public class ServerTicTacToeGame extends ServerFieldGame<TicTacToeGame.Cell> implements TicTacToeGame {
-    private final BiMap<UUID, Cell> playerToCellMap;
-
+public class ServerTicTacToeGame extends ServerPlayerToCellFieldGame<TicTacToeGame.Cell> implements TicTacToeGame {
     public ServerTicTacToeGame(ServerGameLobby lobby) {
-        super(lobby, GameField.of(Cell.EMPTY, size.left(), size.right()));
-
-        List<UUID> players = lobby.getPlayerManager().getPlayerOrder();
-        this.playerToCellMap = TicTacToeGame.createPlayerToCellMap(players);
-    }
-
-    @Override
-    public GameField<Cell> getGameField() {
-        return null;
-    }
-
-    @Override
-    public Cell playerToCell(UUID playerId) {
-        return playerToCellMap.getOrDefault(playerId, Cell.EMPTY);
-    }
-
-
-    /**
-     * Checks if the move is valid: is on the field, is the player's turn, and the cell is empty.
-     *
-     * @param player the player performing the move
-     * @param x      x coordinate
-     * @param y      y coordinate
-     * @return true if the move is valid
-     */
-    @Override
-    public boolean validateMove(ServerPlayer player, int x, int y) {
-        return super.validateMove(player, x, y) && gameField.get(x, y) == Cell.EMPTY;
+        super(lobby, GameField.of(Cell.EMPTY, SIZE.left(), SIZE.right()), Cell::of, Cell.EMPTY);
     }
 
     @Override
     public void handleMove(UUID playerId, int x, int y) {
-        nextPlayer();
-
-        Cell c = playerToCell(playerId);
-
-        PencilGamesServer.LOGGER.debug("Player {} moved to ({}, {}) with cell {}", playerId, x, y, c);
-
-        gameField.set(x, y, c);
+        super.handleMove(playerId, x, y);
 
         Cell winner = checkWin(x, y);
         if (winner != null) {
@@ -66,6 +28,13 @@ public class ServerTicTacToeGame extends ServerFieldGame<TicTacToeGame.Cell> imp
         }
     }
 
+    /**
+     * Check for the winner of the game.
+     *
+     * @param x x coordinate of the last move
+     * @param y y coordinate of the last move
+     * @return Cell associated with the winner or null if there is no winner
+     */
     private @Nullable Cell checkWin(int x, int y) {
         Cell c = gameField.get(x, y);
         if (c == Cell.EMPTY) {
