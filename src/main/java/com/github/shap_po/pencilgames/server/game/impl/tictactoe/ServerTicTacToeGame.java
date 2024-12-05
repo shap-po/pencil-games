@@ -26,6 +26,11 @@ public class ServerTicTacToeGame extends ServerPlayerToCellFieldGame<TicTacToeGa
             PencilGamesServer.LOGGER.debug("Player {} won!", playerId);
             end(Set.of(playerId));
         }
+
+        if (gameField.isFull(Cell.EMPTY)) {
+            PencilGamesServer.LOGGER.debug("The game is a draw!");
+            end(Set.of());
+        }
     }
 
     /**

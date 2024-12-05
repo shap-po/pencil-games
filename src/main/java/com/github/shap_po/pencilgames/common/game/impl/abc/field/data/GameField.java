@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 /**
  * Represents a game field/board.
@@ -110,6 +111,14 @@ public class GameField<C> {
                 action.accept(x, y, get(x, y));
             }
         }
+    }
+
+    public Stream<C> stream() {
+        return cells.stream().flatMap(List::stream);
+    }
+
+    public boolean isFull(C emptyValue) {
+        return stream().noneMatch(emptyValue::equals);
     }
 
     public record ChangeEvent<C>(int x, int y, C oldValue, C newValue) {
