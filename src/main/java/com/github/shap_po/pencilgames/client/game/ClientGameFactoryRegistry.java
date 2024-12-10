@@ -1,5 +1,6 @@
 package com.github.shap_po.pencilgames.client.game;
 
+import com.github.shap_po.pencilgames.client.game.impl.go.ClientGoGame;
 import com.github.shap_po.pencilgames.client.game.impl.tictactoe.ClientTicTacToeGame;
 import com.github.shap_po.pencilgames.client.network.ClientGameLobby;
 import com.github.shap_po.pencilgames.common.game.GameFactory;
@@ -15,6 +16,7 @@ public class ClientGameFactoryRegistry {
 
     static {
         register(ClientTicTacToeGame.getFactory());
+        register(ClientGoGame.getFactory());
     }
 
     public static void register(GameFactory<ClientGameLobby, ? extends ClientGame> factory) {

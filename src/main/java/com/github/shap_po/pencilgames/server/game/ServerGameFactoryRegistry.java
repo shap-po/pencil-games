@@ -4,6 +4,7 @@ import com.github.shap_po.pencilgames.common.game.Game;
 import com.github.shap_po.pencilgames.common.game.GameFactory;
 import com.github.shap_po.pencilgames.common.registry.SimpleRegistry;
 import com.github.shap_po.pencilgames.common.util.Identifier;
+import com.github.shap_po.pencilgames.server.game.impl.go.ServerGoGame;
 import com.github.shap_po.pencilgames.server.game.impl.tictactoe.ServerTicTacToeGame;
 import com.github.shap_po.pencilgames.server.network.ServerGameLobby;
 
@@ -16,6 +17,7 @@ public class ServerGameFactoryRegistry {
 
     static {
         register(ServerTicTacToeGame.getFactory());
+        register(ServerGoGame.getFactory());
     }
 
     public static void register(GameFactory<ServerGameLobby, Game<ServerGameLobby>> factory) {

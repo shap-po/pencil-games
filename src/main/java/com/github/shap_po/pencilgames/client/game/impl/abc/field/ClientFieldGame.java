@@ -10,6 +10,7 @@ import com.github.shap_po.pencilgames.client.ui.screen.game.GameScreen;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.FieldGame;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.data.GameField;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.packet.c2s.PlayerMoveC2SPacket;
+import com.github.shap_po.pencilgames.common.game.impl.abc.field.packet.s2c.FieldUpdatesS2CPacket;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.packet.s2c.InvalidMoveS2CPacket;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.packet.s2c.PlayerMoveS2CPacket;
 import com.github.shap_po.pencilgames.common.network.packet.s2c.game.EndGameS2CPacket;
@@ -36,26 +37,17 @@ public abstract class ClientFieldGame<C> extends ClientGame implements FieldGame
     @Override
     public void onStart() {
         super.onStart();
+        ClientPackets.registerPacketType(FieldUpdatesS2CPacket.PACKET_TYPE);
         ClientPackets.registerPacketType(PlayerMoveS2CPacket.PACKET_TYPE);
         ClientPackets.registerPacketType(InvalidMoveS2CPacket.PACKET_TYPE);
 
-        ClientPackets.registerReceiver(PlayerMoveS2CPacket.PACKET_TYPE, (packet, context) -> {
-            UUID player = packet.playerID();
-            int x = packet.x();
-            int y = packet.y();
-
-            handleMove(player, x, y);
-        });
-        // Restore the correct cell state if the player made an invalid move
+        ClientPackets.registerReceiver(FieldUpdatesS2CPacket.PACKET_TYPE, (packet, context) -> packet.<C>getUpdates().forEach((key, value) -> gameField.set(key.getX(), key.getY(), value)));
+        ClientPackets.registerReceiver(PlayerMoveS2CPacket.PACKET_TYPE, (packet, context) -> handleMove(packet.playerID(), packet.x(), packet.y()));
         ClientPackets.registerReceiver(InvalidMoveS2CPacket.PACKET_TYPE, (packet, context) -> {
-            int x = packet.x();
-            int y = packet.y();
-
-            @SuppressWarnings({"unchecked"})
-            C lastState = (C) packet.lastState();
-
-            gameField.set(x, y, lastState);
+            gameField.set(packet.x(), packet.y(), packet.getLastState());
+            previousPlayer();
         });
+
         ClientPackets.registerReceiver(EndGameS2CPacket.PACKET_TYPE, (packet, context) -> {
             gameScreen.disableInteractions();
         });
@@ -64,6 +56,7 @@ public abstract class ClientFieldGame<C> extends ClientGame implements FieldGame
     @Override
     public void onEnd() {
         super.onEnd();
+        ClientPackets.unregisterPacketType(FieldUpdatesS2CPacket.PACKET_TYPE);
         ClientPackets.unregisterPacketType(PlayerMoveS2CPacket.PACKET_TYPE);
         ClientPackets.unregisterPacketType(InvalidMoveS2CPacket.PACKET_TYPE);
     }

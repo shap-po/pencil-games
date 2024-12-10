@@ -1,12 +1,15 @@
 package com.github.shap_po.pencilgames.common.game.impl.abc.field.data;
 
 import com.github.shap_po.pencilgames.common.event.type.ConsumerEvent;
+import com.github.shap_po.pencilgames.common.util.Position;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -85,10 +88,14 @@ public class GameField<C> {
     }
 
     public C get(int x, int y) {
-        if (x >= getWidth() || y >= getHeight()) {
+        if (!isOnField(x, y)) {
             return null;
         }
         return cells.get(y).get(x);
+    }
+
+    public C get(Position position) {
+        return get(position.getX(), position.getY());
     }
 
     public void set(int x, int y, C value) {
@@ -101,8 +108,16 @@ public class GameField<C> {
         onChange.accept(new ChangeEvent<>(x, y, oldValue, value));
     }
 
+    public void set(Position position, C value) {
+        set(position.getX(), position.getY(), value);
+    }
+
     public boolean isOnField(int x, int y) {
         return x >= 0 && y >= 0 && x < getWidth() && y < getHeight();
+    }
+
+    public boolean isOnField(Position position) {
+        return isOnField(position.getX(), position.getY());
     }
 
     public void forEach(TriConsumer<Integer, Integer, C> action) {
@@ -119,6 +134,14 @@ public class GameField<C> {
 
     public boolean isFull(C emptyValue) {
         return stream().noneMatch(emptyValue::equals);
+    }
+
+    public int getCount(C value) {
+        return (int) stream().filter(value::equals).count();
+    }
+
+    public Map<C, Integer> getStats() {
+        return stream().collect(Collectors.toMap(c -> c, c -> 1, Integer::sum));
     }
 
     public record ChangeEvent<C>(int x, int y, C oldValue, C newValue) {

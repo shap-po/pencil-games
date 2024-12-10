@@ -3,6 +3,7 @@ package com.github.shap_po.pencilgames.common.game.impl.abc.field;
 import com.github.shap_po.pencilgames.common.util.Pair;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,7 +26,15 @@ public interface PlayerToCellFieldGame<C> extends FieldGame<C> {
      * @param playerId player ID
      * @return the cell
      */
-    C playerToCell(UUID playerId);
+    @Nullable C playerToCell(UUID playerId);
+
+    /**
+     * Gets the player ID associated with the cell.
+     *
+     * @param cell the cell
+     * @return the player ID
+     */
+    @Nullable UUID cellToPlayer(C cell);
 
     /**
      * Creates a bi-map from player ID to cell variant.

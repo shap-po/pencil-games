@@ -1,8 +1,8 @@
 package com.github.shap_po.pencilgames.common.game;
 
 import com.github.shap_po.pencilgames.common.game.player.Player;
-import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 import java.util.UUID;
 
 /**
@@ -50,6 +50,10 @@ public abstract class Game<L extends GameLobby<?>> {
 
     public void nextPlayer() {
         this.playerTurn = (this.playerTurn + 1) % this.lobby.getPlayerManager().getPlayerCount();
+    }
+
+    public void previousPlayer() {
+        this.playerTurn = (this.playerTurn - 1 + this.lobby.getPlayerManager().getPlayerCount()) % this.lobby.getPlayerManager().getPlayerCount();
     }
 
     public boolean isPlayerTurn(UUID playerId) {

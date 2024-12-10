@@ -3,14 +3,15 @@ package com.github.shap_po.pencilgames.client.game.impl.abc.field;
 import com.github.shap_po.pencilgames.client.network.ClientGameLobby;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.PlayerToCellFieldGame;
 import com.github.shap_po.pencilgames.common.game.impl.abc.field.data.GameField;
+import com.google.common.collect.BiMap;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
 public abstract class ClientPlayerToCellFieldGame<C> extends ClientFieldGame<C> implements PlayerToCellFieldGame<C> {
-    private final Map<UUID, C> playerToCellMap;
+    private final BiMap<UUID, C> playerToCellMap;
     private final C emptyCell;
 
     public ClientPlayerToCellFieldGame(ClientGameLobby lobby, GameField<C> gameField, Function<Integer, C> cellOf, C emptyCell) {
@@ -28,6 +29,11 @@ public abstract class ClientPlayerToCellFieldGame<C> extends ClientFieldGame<C> 
     @Override
     public C playerToCell(UUID playerId) {
         return playerToCellMap.getOrDefault(playerId, emptyCell);
+    }
+
+    @Override
+    public @Nullable UUID cellToPlayer(C cell) {
+        return playerToCellMap.inverse().getOrDefault(cell, null);
     }
 
     /**

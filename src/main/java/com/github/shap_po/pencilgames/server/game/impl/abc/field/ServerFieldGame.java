@@ -13,10 +13,16 @@ import com.github.shap_po.pencilgames.server.network.ServerPackets;
 
 public abstract class ServerFieldGame<C> extends ServerGame implements FieldGame<C> {
     protected final GameField<C> gameField;
+    private final boolean broadcastMoves;
 
-    public ServerFieldGame(ServerGameLobby lobby, GameField<C> gameField) {
+    public ServerFieldGame(ServerGameLobby lobby, GameField<C> gameField, boolean broadcastMoves) {
         super(lobby);
         this.gameField = gameField;
+        this.broadcastMoves = broadcastMoves;
+    }
+
+    public ServerFieldGame(ServerGameLobby lobby, GameField<C> gameField) {
+        this(lobby, gameField, true);
     }
 
     @Override
@@ -49,7 +55,9 @@ public abstract class ServerFieldGame<C> extends ServerGame implements FieldGame
             return;
         }
 
-        lobby.broadcastPacket(new PlayerMoveS2CPacket(player.getId(), x, y), player.getId());
+        if (broadcastMoves) {
+            lobby.broadcastPacket(new PlayerMoveS2CPacket(player.getId(), x, y), player.getId());
+        }
         handleMove(player.getId(), x, y);
     }
 

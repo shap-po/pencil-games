@@ -6,6 +6,7 @@ import com.github.shap_po.pencilgames.server.PencilGamesServer;
 import com.github.shap_po.pencilgames.server.game.player.ServerPlayer;
 import com.github.shap_po.pencilgames.server.network.ServerGameLobby;
 import com.google.common.collect.BiMap;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,8 +16,8 @@ public abstract class ServerPlayerToCellFieldGame<C> extends ServerFieldGame<C> 
     private final BiMap<UUID, C> playerToCellMap;
     private final C emptyCell;
 
-    public ServerPlayerToCellFieldGame(ServerGameLobby lobby, GameField<C> gameField, Function<Integer, C> cellOf, C emptyCell) {
-        super(lobby, gameField);
+    public ServerPlayerToCellFieldGame(ServerGameLobby lobby, GameField<C> gameField, boolean broadcastMoves, Function<Integer, C> cellOf, C emptyCell) {
+        super(lobby, gameField, broadcastMoves);
 
         this.emptyCell = emptyCell;
 
@@ -24,9 +25,18 @@ public abstract class ServerPlayerToCellFieldGame<C> extends ServerFieldGame<C> 
         this.playerToCellMap = PlayerToCellFieldGame.createPlayerToCellMap(players, cellOf);
     }
 
+    public ServerPlayerToCellFieldGame(ServerGameLobby lobby, GameField<C> gameField, Function<Integer, C> cellOf, C emptyCell) {
+        this(lobby, gameField, true, cellOf, emptyCell);
+    }
+
     @Override
-    public C playerToCell(UUID playerId) {
-        return playerToCellMap.getOrDefault(playerId, emptyCell);
+    public @Nullable C playerToCell(UUID playerId) {
+        return playerToCellMap.getOrDefault(playerId, null);
+    }
+
+    @Override
+    public @Nullable UUID cellToPlayer(C cell) {
+        return playerToCellMap.inverse().getOrDefault(cell, null);
     }
 
     @Override

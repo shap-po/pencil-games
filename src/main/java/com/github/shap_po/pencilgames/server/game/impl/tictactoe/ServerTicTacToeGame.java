@@ -14,20 +14,20 @@ import java.util.UUID;
 
 public class ServerTicTacToeGame extends ServerPlayerToCellFieldGame<TicTacToeGame.Cell> implements TicTacToeGame {
     public ServerTicTacToeGame(ServerGameLobby lobby) {
-        super(lobby, GameField.of(Cell.EMPTY, SIZE.left(), SIZE.right()), Cell::of, Cell.EMPTY);
+        super(lobby, GameField.of(TicTacToeGame.Cell.EMPTY, TicTacToeGame.SIZE.getLeft(), TicTacToeGame.SIZE.getRight()), TicTacToeGame.Cell::of, TicTacToeGame.Cell.EMPTY);
     }
 
     @Override
     public void handleMove(UUID playerId, int x, int y) {
         super.handleMove(playerId, x, y);
 
-        Cell winner = checkWin(x, y);
+        TicTacToeGame.Cell winner = checkWin(x, y);
         if (winner != null) {
             PencilGamesServer.LOGGER.debug("Player {} won!", playerId);
             end(Set.of(playerId));
         }
 
-        if (gameField.isFull(Cell.EMPTY)) {
+        if (gameField.isFull(TicTacToeGame.Cell.EMPTY)) {
             PencilGamesServer.LOGGER.debug("The game is a draw!");
             end(Set.of());
         }
@@ -40,9 +40,9 @@ public class ServerTicTacToeGame extends ServerPlayerToCellFieldGame<TicTacToeGa
      * @param y y coordinate of the last move
      * @return Cell associated with the winner or null if there is no winner
      */
-    private @Nullable Cell checkWin(int x, int y) {
-        Cell c = gameField.get(x, y);
-        if (c == Cell.EMPTY) {
+    private @Nullable TicTacToeGame.Cell checkWin(int x, int y) {
+        TicTacToeGame.Cell c = gameField.get(x, y);
+        if (c == TicTacToeGame.Cell.EMPTY) {
             return null;
         }
 
@@ -109,6 +109,6 @@ public class ServerTicTacToeGame extends ServerPlayerToCellFieldGame<TicTacToeGa
     }
 
     public static GameFactory<ServerGameLobby, Game<ServerGameLobby>> getFactory() {
-        return new GameFactory<>(GAME_ID, ServerTicTacToeGame::new);
+        return new GameFactory<>(TicTacToeGame.GAME_ID, ServerTicTacToeGame::new);
     }
 }
