@@ -1,5 +1,7 @@
 package com.github.shap_po.pencilgames.common.game.player;
 
+import com.github.shap_po.pencilgames.common.event.type.ConsumerEvent;
+import com.github.shap_po.pencilgames.common.event.type.RunnableEvent;
 import com.github.shap_po.pencilgames.common.util.LoggerUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -12,6 +14,10 @@ import java.util.*;
  * @param <P> player type
  */
 public class PlayerManager<P extends Player> {
+    public final ConsumerEvent<P> onPlayerConnect = ConsumerEvent.create();
+    public final ConsumerEvent<P> onPlayerDisconnect = ConsumerEvent.create();
+    public final RunnableEvent onOrderChange = RunnableEvent.create();
+
     private final Logger LOGGER = LoggerUtils.getParentLogger();
 
     private final Map<UUID, P> players = new HashMap<>();
@@ -68,6 +74,7 @@ public class PlayerManager<P extends Player> {
     public void addPlayer(UUID id, P player) {
         players.put(id, player);
         playerOrder.add(id);
+        onPlayerConnect.accept(player);
     }
 
     /**
@@ -97,6 +104,7 @@ public class PlayerManager<P extends Player> {
         if (!players.containsKey(id)) return;
         players.remove(id);
         playerOrder.remove(id);
+        onPlayerDisconnect.accept(players.get(id));
     }
 
     /**
@@ -147,6 +155,7 @@ public class PlayerManager<P extends Player> {
         }
         playerOrder.clear();
         playerOrder.addAll(order);
+        onOrderChange.run();
     }
 
     /**
