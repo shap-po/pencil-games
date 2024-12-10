@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 base {
@@ -37,4 +38,18 @@ tasks.withType(JavaCompile).configureEach {
     it.options.encoding = "UTF-8"
 
     it.options.release = 21
+}
+
+application {
+    mainClass = "com.github.shap_po.pencilgames.client.PencilGamesClient"
+}
+
+tasks.register('runClient', JavaExec) {
+    mainClass = "com.github.shap_po.pencilgames.client.PencilGamesClient"
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+tasks.register('runServer', JavaExec) {
+    mainClass = "com.github.shap_po.pencilgames.server.PencilGamesServer"
+    classpath = sourceSets.main.runtimeClasspath
 }
